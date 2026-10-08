@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ポジショニング姿勢可視化ツール</title>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;padding:20px;background:#f3f5f7;color:#222;font-family:"Segoe UI","Yu Gothic",Meiryo,sans-serif}.wrap{max-width:1400px;margin:auto}.grid{display:grid;grid-template-columns:minmax(240px,2fr) 6px minmax(180px,1fr);gap:0;align-items:stretch;min-height:760px}.card{background:#fff;border:1px solid #d9dee3;border-radius:12px;padding:16px;box-shadow:0 1px 3px #0001}.stage{position:relative;width:100%;aspect-ratio:4/5;background:#111;border-radius:8px;overflow:hidden}#video,#overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.status{padding:10px 12px;border-radius:8px;margin:8px 0;background:#eef1f4;border-left:5px solid #777}.ok{border-left-color:#16803c!important;background:#eef9f1!important}.warn{border-left-color:#b77900!important;background:#fff8e6!important}.error{border-left-color:#c62828!important;background:#fff0f0!important}.running{border-left-color:#1565c0!important;background:#eef5ff!important}.controls{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}button{font:inherit;padding:9px 12px;border-radius:7px;border:1px solid #aeb6bf;background:#fff;cursor:pointer}button.primary{background:#1565c0;color:#fff}button:disabled{opacity:.45}.metric{display:grid;grid-template-columns:1fr auto;padding:10px 0;border-bottom:1px solid #e5e8eb}.value{font-weight:700}.level{text-align:center;font-size:20px;font-weight:700;padding:12px;border-radius:8px;margin:12px 0}.small{background:#eaf7ee}.medium{background:#fff5d9}.large{background:#ffe8e8}.note,.help{font-size:12px;line-height:1.55;color:#555;background:#f7f8f9;padding:10px;border-radius:7px;margin-top:12px}.help{font-size:13px;background:#fff8e6}.log{height:170px;overflow:auto;background:#111;color:#d8f3dc;padding:9px;border-radius:7px;font:12px/1.45 Consolas,monospace;white-space:pre-wrap}.step{display:flex;gap:8px;align-items:center;margin:6px 0}.dot{width:12px;height:12px;border-radius:50%;background:#bbb;flex:none}.dot.ok{background:#16803c}.dot.error{background:#c62828}.dot.running{background:#1565c0}.sub{font-size:12px;color:#666}.top-description{font-size:13px;color:#555;line-height:1.5;margin:4px 0 12px}
+<style>*{box-sizing:border-box}body{margin:0;padding:5px;background:#f3f5f7;color:#222;font-family:"Segoe UI","Yu Gothic",Meiryo,sans-serif}.wrap{max-width:1400px;margin:auto}.grid{display:grid;grid-template-columns:minmax(240px,2fr) 6px minmax(180px,1fr);gap:0;align-items:stretch;min-height:760px}.card{background:#fff;border:1px solid #d9dee3;border-radius:6px;padding:4px;box-shadow:0 1px 3px #0001}.stage{position:relative;width:100%;aspect-ratio:4/5;background:#111;border-radius:8px;overflow:hidden}#video,#overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.status{padding:5px 12px;border-radius:8px;margin:8px 0;background:#eef1f4;border-left:5px solid #777}.ok{border-left-color:#16803c!important;background:#eef9f1!important}.warn{border-left-color:#b77900!important;background:#fff8e6!important}.error{border-left-color:#c62828!important;background:#fff0f0!important}.running{border-left-color:#1565c0!important;background:#eef5ff!important}.controls{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}button{font:inherit;padding:9px 12px;border-radius:7px;border:1px solid #aeb6bf;background:#fff;cursor:pointer}button.primary{background:#1565c0;color:#fff}button:disabled{opacity:.45}.metric{display:grid;grid-template-columns:1fr auto;padding:10px 0;border-bottom:1px solid #e5e8eb}.value{font-weight:700}.level{text-align:center;font-size:20px;font-weight:700;padding:12px;border-radius:8px;margin:12px 0}.small{background:#eaf7ee}.medium{background:#fff5d9}.large{background:#ffe8e8}.note,.help{font-size:12px;line-height:1.55;color:#555;background:#f7f8f9;padding:10px;border-radius:7px;margin-top:12px}.help{font-size:13px;background:#fff8e6}.log{height:170px;overflow:auto;background:#111;color:#d8f3dc;padding:9px;border-radius:7px;font:12px/1.45 Consolas,monospace;white-space:pre-wrap}.step{display:flex;gap:8px;align-items:center;margin:6px 0}.dot{width:12px;height:12px;border-radius:50%;background:#bbb;flex:none}.dot.ok{background:#16803c}.dot.error{background:#c62828}.dot.running{background:#1565c0}.sub{font-size:12px;color:#666}.top-description{font-size:13px;color:#555;line-height:1.5;margin:4px 0 12px}
 .top-note{font-size:12px;color:#666}
 #targetPanel{margin-top:10px!important;padding:9px 10px!important}
 .target-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0}
@@ -46,141 +46,8 @@
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
 }
-
-/* ===== Androidタブレット向け ===== */
-html, body {
-  width:100%;
-  min-height:100%;
-}
-body {
-  padding:12px;
-  overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-  touch-action:pan-y;
-}
-.wrap {
-  max-width:none;
-  width:100%;
-}
-h1 {
-  font-size:clamp(22px, 2.6vw, 30px);
-  margin:4px 0 6px;
-}
-.top-description {
-  font-size:clamp(12px, 1.6vw, 15px);
-  margin-bottom:8px;
-}
-.grid {
-  width:100%;
-  min-height:calc(100vh - 105px);
-  height:calc(100vh - 105px);
-}
-.camera-column {
-  min-height:0;
-}
-.camera-column main,
-.camera-column main > .card {
-  height:100%;
-  min-height:0;
-}
-.camera-column main > .card {
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-.camera-column .stage {
-  flex:1 1 auto;
-  min-height:0;
-  aspect-ratio:auto;
-}
-.camera-column .controls {
-  flex:none;
-  margin-bottom:0;
-}
-.procedure-column {
-  min-height:0;
-  height:100%;
-}
-.procedure-column > aside {
-  height:100%;
-}
-.procedure-column .guidance {
-  min-height:0;
-}
-.layout-divider {
-  min-height:100%;
-}
-button, select {
-  min-height:42px;
-  touch-action:manipulation;
-}
-button {
-  padding:8px 13px;
-}
-.target-row {
-  gap:6px;
-}
-#targetPanel {
-  flex:none;
-}
-
-/* タブレット縦向き */
-@media (orientation:portrait) and (max-width:900px) {
-  body {
-    padding:10px;
-  }
-  .grid {
-    display:grid;
-    grid-template-columns:1fr;
-    grid-template-rows:minmax(420px, 56vh) minmax(320px, 44vh);
-    height:auto;
-    min-height:0;
-    gap:10px;
-  }
-  .layout-divider {
-    display:none;
-  }
-  .camera-column {
-    min-height:420px;
-  }
-  .camera-column main > .card {
-    height:100%;
-  }
-  .camera-column .stage {
-    flex:1 1 auto;
-    min-height:0;
-  }
-  .procedure-column {
-    height:auto;
-    min-height:320px;
-  }
-  .procedure-column > aside {
-    height:100%;
-    min-height:320px;
-  }
-  .procedure-column .guidance {
-    min-height:0;
-  }
-}
-
-/* 小型タブレット／ブラウザの表示領域が狭い場合 */
-@media (max-width:700px) {
-  body {
-    padding:8px;
-  }
-  .grid {
-    grid-template-rows:minmax(360px, 55vh) minmax(300px, 45vh);
-  }
-  .card {
-    padding:12px;
-  }
-  .guidance-title {
-    font-size:20px;
-  }
-}
-
 </style></head>
-<body><div class="wrap"><h1>ポジショニング姿勢可視化ツール</h1>
+<body><div class="wrap">
 <p class="top-description">
 <b>ねじれの視覚表示：</b>
 <span style="color:#2e8b57;font-weight:700">緑＝小</span> ／
@@ -188,7 +55,7 @@ button {
 <span style="color:#c62828;font-weight:700">赤＝大</span>。
 肩・骨盤ラインと体幹軸の色と太さが変化し、矢印で方向を示します。
 <span class="top-note">医学的な危険度判定ではありません。</span>
-<br><b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p><div class="grid"><div class="camera-column"><main><div class="card"><div id="mainStatus" class="status">MediaPipeを確認しています…</div><div class="stage"><video id="video" autoplay muted playsinline style="transform:scaleX(-1);-webkit-transform:scaleX(-1);touch-action:none;"></video><canvas id="overlay"></canvas></div>
+<br><b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p><div class="grid"><div class="camera-column"><main><div class="card"><div id="mainStatus" class="status">確認しています…</div><div class="stage"><video id="video" autoplay muted playsinline style="transform:scaleX(-1);-webkit-transform:scaleX(-1);"></video><canvas id="overlay"></canvas></div>
 
 <div id="targetPanel" style="border:2px solid #7a8b99;border-radius:10px;background:#f8fafb">
   <div class="target-row">
@@ -458,7 +325,7 @@ step(4,"検出中・評価中","running");
 draw(res.poseLandmarks,m);
 }
 function check(){if(typeof Pose==="undefined"){step(1,"失敗","error");status("MediaPipeライブラリが読み込まれていません","error");log("ERROR: Pose が未定義です。CDNアクセスを確認してください。");return false}step(1,"OK","ok");log("MediaPipe Pose ライブラリ読み込み成功");return true}
-function create(){if(pose)return true;if(!check())return false;try{pose=new Pose({locateFile:function(f){return"https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+f}});pose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(results);step(2,"OK","ok");status("Pose処理の準備完了。カメラを開始できます。","ok");document.getElementById("startBtn").disabled=false;log("Poseオブジェクト作成成功");return true}catch(e){step(2,"失敗","error");status("Pose処理の初期化に失敗しました","error");log("Pose ERROR: "+e.message);return false}}
+function create(){if(pose)return true;if(!check())return false;try{pose=new Pose({locateFile:function(f){return"https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+f}});pose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(results);step(2,"OK","ok");status("カメラを開始できます。","ok");document.getElementById("startBtn").disabled=false;log("Poseオブジェクト作成成功");return true}catch(e){step(2,"失敗","error");status("初期化に失敗しました","error");log("Pose ERROR: "+e.message);return false}}
 async function start(){if(!create())return;stop(false);status("カメラを起動しています…","running");step(3,"起動中","running");if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){step(3,"非対応","error");status("このブラウザーではカメラAPIを利用できません","error");log("getUserMedia が利用できません");return}try{var s=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:false});video.srcObject=s;await video.play();step(3,"OK","ok");status("カメラ映像をリアルタイム解析しています…","running");running=true;smooth=null;step(4,"検出待ち","running");log("姿勢推定を開始しました。肩(11/12)・骨盤(23/24)の4点を待機中");log("カメラ開始: "+video.videoWidth+"x"+video.videoHeight);camera=new Camera(video,{onFrame:async function(){if(running)await pose.send({image:video})},width:1280,height:720});camera.start();document.getElementById("stopBtn").disabled=false}catch(e){step(3,"失敗","error");status("カメラを起動できませんでした","error");log("Camera ERROR: "+e.name+" / "+e.message);if(e.name==="NotAllowedError")log("カメラ使用許可を確認してください")}}
 function stop(show){running=false;if(camera){try{camera.stop()}catch(e){}camera=null}if(video.srcObject){video.srcObject.getTracks().forEach(function(t){t.stop()});video.srcObject=null}document.getElementById("stopBtn").disabled=true;if(show!==false){status("停止しました","warn");step(4,"停止","");log("カメラ停止")}}
 document.getElementById("startBtn").onclick=start;document.getElementById("stopBtn").onclick=function(){stop(true)};window.onresize=resize;log("HTML起動 / classic script版 / file://対応");if(check())create();})();
