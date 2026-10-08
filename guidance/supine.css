@@ -1,0 +1,367 @@
+﻿#image1 {
+         max-width:21.000pt;
+         height:11.250pt;
+         margin-bottom:0.750pt;
+         margin-left:0.750pt;
+         margin-top:0.750pt;
+         margin-right:0.750pt;
+}
+.image {
+         max-width:100%;
+         margin-bottom:0.000pt;
+		 height: auto
+}
+p.FM_セル見出し {
+            margin-left:0.000pt;
+            margin-right:0.000pt;
+            text-align:center;
+            text-indent:0.000pt;
+            margin-top:0.000pt;
+            margin-bottom:0.000pt;
+            word-spacing:0.250em;
+            font-family:"ＭＳ 明朝";
+            font-style:normal;
+            font-weight:normal;
+            font-size:12.0pt;
+            color:#000000;
+            background-color:none;
+            text-decoration:none;
+            letter-spacing:0.00em;
+}
+caption.FM_セル見出し {
+                  margin-left:0.000pt;
+                  margin-right:0.000pt;
+                  text-align:center;
+                  text-indent:0.000pt;
+                  margin-top:0.000pt;
+                  margin-bottom:0.000pt;
+                  word-spacing:0.250em;
+                  font-family:"ＭＳ 明朝";
+                  font-style:normal;
+                  font-weight:normal;
+                  font-size:12.0pt;
+                  color:#000000;
+                  background-color:none;
+                  text-decoration:none;
+                  letter-spacing:0.00em;
+}
+p.FM_表タイトル {
+            margin-left:0.000pt;
+            margin-right:0.000pt;
+            text-align:center;
+            text-indent:0.000pt;
+            margin-top:0.000pt;
+            margin-bottom:0.000pt;
+            word-spacing:0.250em;
+            font-family:"ＭＳ ゴシック";
+            font-style:normal;
+            font-weight:normal;
+            font-size:12.0pt;
+            color:#000000;
+            background-color:none;
+            text-decoration:none;
+            letter-spacing:0.00em;
+}
+caption.FM_表タイトル {
+                  margin-left:0.000pt;
+                  margin-right:0.000pt;
+                  text-align:center;
+                  text-indent:0.000pt;
+                  margin-top:0.000pt;
+                  margin-bottom:0.000pt;
+                  word-spacing:0.250em;
+                  font-family:"ＭＳ ゴシック";
+                  font-style:normal;
+                  font-weight:normal;
+                  font-size:12.0pt;
+                  color:#000000;
+                  background-color:none;
+                  text-decoration:none;
+                  letter-spacing:0.00em;
+}
+p.FM_040_CircleSubHead_ {
+                         margin-left:4.000pt;
+                         margin-right:0.000pt;
+                         text-align:justify;
+                         text-indent:0.000pt;
+                         margin-top:7.000pt;
+                         margin-bottom:0.000pt;
+                         word-spacing:0.250em;
+                         font-family:"Noto Sans JP Thin";
+                         font-style:normal;
+                         font-weight:normal;
+                         font-size:15.0pt;
+                         color:#ffffff;
+                         background-color:#228a22;
+                         text-decoration:none;
+                         letter-spacing:0.00em;
+}
+caption.FM_040_CircleSubHead_ {
+                               margin-left:4.000pt;
+                               margin-right:0.000pt;
+                               text-align:justify;
+                               text-indent:0.000pt;
+                               margin-top:7.000pt;
+                               margin-bottom:0.000pt;
+                               word-spacing:0.250em;
+                               font-family:"Noto Sans JP Thin";
+                               font-style:normal;
+                               font-weight:normal;
+                               font-size:15.0pt;
+                               color:#ffffff;
+                               background-color:#228a22;
+                               text-decoration:none;
+                               letter-spacing:0.00em;
+}
+p.FM_040_CircleSubHead {
+                        margin-left:0.000pt;
+                        margin-right:0.000pt;
+                        text-align:justify;
+                        text-indent:0.000pt;
+                        margin-top:7.000pt;
+                        margin-bottom:0.000pt;
+                        word-spacing:0.250em;
+                        font-family:"Noto Sans JP Thin";
+                        font-style:normal;
+                        font-weight:normal;
+                        font-size:15.0pt;
+                        color:#ffffff;
+                        background-color:#228a22;
+                        text-decoration:none;
+                        letter-spacing:0.00em;
+}
+caption.FM_040_CircleSubHead {
+                              margin-left:0.000pt;
+                              margin-right:0.000pt;
+                              text-align:justify;
+                              text-indent:0.000pt;
+                              margin-top:7.000pt;
+                              margin-bottom:0.000pt;
+                              word-spacing:0.250em;
+                              font-family:"Noto Sans JP Thin";
+                              font-style:normal;
+                              font-weight:normal;
+                              font-size:15.0pt;
+                              color:#ffffff;
+                              background-color:#228a22;
+                              text-decoration:none;
+                              letter-spacing:0.00em;
+}
+p.FM_030_SquareSubTitle {
+                         margin-left:5.650pt;
+                         margin-right:0.000pt;
+                         text-align:justify;
+                         text-indent:-2.850pt;
+                         margin-top:14.150pt;
+                         margin-bottom:0.000pt;
+                         word-spacing:0.250em;
+                         font-family:"Noto Sans JP Thin";
+                         font-style:normal;
+                         font-weight:normal;
+                         font-size:20.0pt;
+                         color:#ffffff;
+                         background-color:#228a22;
+                         text-decoration:none;
+                         letter-spacing:0.00em;
+}
+caption.FM_030_SquareSubTitle {
+                               margin-left:5.650pt;
+                               margin-right:0.000pt;
+                               text-align:justify;
+                               text-indent:-2.850pt;
+                               margin-top:14.150pt;
+                               margin-bottom:0.000pt;
+                               word-spacing:0.250em;
+                               font-family:"Noto Sans JP Thin";
+                               font-style:normal;
+                               font-weight:normal;
+                               font-size:20.0pt;
+                               color:#ffffff;
+                               background-color:#228a22;
+                               text-decoration:none;
+                               letter-spacing:0.00em;
+}
+p.FM_070_Step {
+               margin-left:14.150pt;
+               margin-right:0.000pt;
+               text-align:justify;
+               text-indent:-14.150pt;
+               margin-top:0.000pt;
+               margin-bottom:0.000pt;
+               word-spacing:0.250em;
+               font-family:"Noto Sans JP Thin";
+               font-style:normal;
+               font-weight:normal;
+               font-size:12.0pt;
+               color:#000000;
+               background-color:none;
+               text-decoration:none;
+               letter-spacing:0.00em;
+}
+caption.FM_070_Step {
+                     margin-left:14.150pt;
+                     margin-right:0.000pt;
+                     text-align:justify;
+                     text-indent:-14.150pt;
+                     margin-top:0.000pt;
+                     margin-bottom:0.000pt;
+                     word-spacing:0.250em;
+                     font-family:"Noto Sans JP Thin";
+                     font-style:normal;
+                     font-weight:normal;
+                     font-size:12.0pt;
+                     color:#000000;
+                     background-color:none;
+                     text-decoration:none;
+                     letter-spacing:0.00em;
+}
+p.FM_セル本文 {
+           margin-left:0.000pt;
+           margin-right:0.000pt;
+           text-align:justify;
+           text-indent:0.000pt;
+           margin-top:0.000pt;
+           margin-bottom:0.000pt;
+           word-spacing:0.250em;
+           font-family:"ＭＳ 明朝";
+           font-style:normal;
+           font-weight:normal;
+           font-size:12.0pt;
+           color:#000000;
+           background-color:none;
+           text-decoration:none;
+           letter-spacing:0.00em;
+}
+caption.FM_セル本文 {
+                 margin-left:0.000pt;
+                 margin-right:0.000pt;
+                 text-align:justify;
+                 text-indent:0.000pt;
+                 margin-top:0.000pt;
+                 margin-bottom:0.000pt;
+                 word-spacing:0.250em;
+                 font-family:"ＭＳ 明朝";
+                 font-style:normal;
+                 font-weight:normal;
+                 font-size:12.0pt;
+                 color:#000000;
+                 background-color:none;
+                 text-decoration:none;
+                 letter-spacing:0.00em;
+}
+p.FM_脚注 {
+         margin-left:39.685pt;
+         margin-right:19.843pt;
+         text-align:justify;
+         text-indent:-19.843pt;
+         margin-top:0.000pt;
+         margin-bottom:0.000pt;
+         word-spacing:0.250em;
+         font-family:"ＭＳ 明朝";
+         font-style:normal;
+         font-weight:normal;
+         font-size:10.0pt;
+         color:#000000;
+         background-color:none;
+         text-decoration:none;
+         letter-spacing:0.00em;
+}
+caption.FM_脚注 {
+               margin-left:39.685pt;
+               margin-right:19.843pt;
+               text-align:justify;
+               text-indent:-19.843pt;
+               margin-top:0.000pt;
+               margin-bottom:0.000pt;
+               word-spacing:0.250em;
+               font-family:"ＭＳ 明朝";
+               font-style:normal;
+               font-weight:normal;
+               font-size:10.0pt;
+               color:#000000;
+               background-color:none;
+               text-decoration:none;
+               letter-spacing:0.00em;
+}
+p.FM_本文 {
+         margin-left:0.000pt;
+         margin-right:0.000pt;
+         text-align:justify;
+         text-indent:0.000pt;
+         margin-top:0.000pt;
+         margin-bottom:0.000pt;
+         word-spacing:0.250em;
+         font-family:"ＭＳ 明朝";
+         font-style:normal;
+         font-weight:normal;
+         font-size:12.0pt;
+         color:#000000;
+         background-color:none;
+         text-decoration:none;
+         letter-spacing:0.00em;
+}
+caption.FM_本文 {
+               margin-left:0.000pt;
+               margin-right:0.000pt;
+               text-align:justify;
+               text-indent:0.000pt;
+               margin-top:0.000pt;
+               margin-bottom:0.000pt;
+               word-spacing:0.250em;
+               font-family:"ＭＳ 明朝";
+               font-style:normal;
+               font-weight:normal;
+               font-size:12.0pt;
+               color:#000000;
+               background-color:none;
+               text-decoration:none;
+               letter-spacing:0.00em;
+}
+p.FM_表脚注 {
+          margin-left:39.685pt;
+          margin-right:19.843pt;
+          text-align:justify;
+          text-indent:-19.843pt;
+          margin-top:0.000pt;
+          margin-bottom:0.000pt;
+          word-spacing:0.250em;
+          font-family:"ＭＳ 明朝";
+          font-style:normal;
+          font-weight:normal;
+          font-size:10.0pt;
+          color:#000000;
+          background-color:none;
+          text-decoration:none;
+          letter-spacing:0.00em;
+}
+caption.FM_表脚注 {
+                margin-left:39.685pt;
+                margin-right:19.843pt;
+                text-align:justify;
+                text-indent:-19.843pt;
+                margin-top:0.000pt;
+                margin-bottom:0.000pt;
+                word-spacing:0.250em;
+                font-family:"ＭＳ 明朝";
+                font-style:normal;
+                font-weight:normal;
+                font-size:10.0pt;
+                color:#000000;
+                background-color:none;
+                text-decoration:none;
+                letter-spacing:0.00em;
+}
+OL {
+    margin-top:0px;
+    margin-bottom:0px;
+}
+UL {
+    margin-top:0px;
+    margin-bottom:0px;
+}
+span.FM_強調 {
+            font-style:italic;
+}
+span.FM_数式変数 {
+              font-style:italic;
+}
