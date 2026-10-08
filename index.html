@@ -17,7 +17,7 @@
 .target-actions,.target-status{display:none!important}
 .guidance h2{margin:0 0 8px;font-size:19px}
 .guidance-title{font-size:22px;font-weight:700;margin-bottom:8px}
-.guidance-intro{font-size:13px;color:#555;line-height:1.55;margin-bottom:14px}
+.guidance-intro{font-size:13px;color:#555;line-height:1.55;margin-bottom:14px}.guidance-loading{padding:10px 0;color:#666;font-size:13px}
 .guidance ol{margin:8px 0 0 22px;padding:0}
 .guidance li{margin:9px 0;line-height:1.55}
 .guidance .point{padding:10px 12px;border-radius:8px;background:#f7f8f9;margin-top:12px;font-size:13px;line-height:1.55}
@@ -84,48 +84,8 @@
 <div class="guidance-title">ポジショニング手順</div>
 <div class="guidance-intro">「目標姿勢」で医学的な目標を選択してください。右側の手順は選択した目標に応じて切り替わります。ポジショニングを完了したら、左側のカメラ映像で姿勢を確認してください。</div>
 
-<div id="guidance-supine" class="guidance-content">
-<h2>仰臥位</h2>
-<ol>
-<li>患者を仰向けにし、頭部・体幹・骨盤が自然に一直線になるように整えます。</li>
-<li>頭部、肩、骨盤の位置を確認し、身体が不要にねじれていないか確認します。</li>
-<li>必要に応じて枕やクッションを使用し、患者が安楽に保持できる状態にします。</li>
-<li>ポジショニングが完了したら、左側のカメラ映像で姿勢を確認します。</li>
-</ol>
-<div class="point"><b>確認：</b>ポジショニング完了後、現在の姿勢をカメラ映像と姿勢表示で確認します。</div>
-</div>
-
-<div id="guidance-tilt30" class="guidance-content" style="display:none">
-<h2>30°側方傾斜位</h2>
-<ol>
-<li>患者を仰臥位から側方へ傾け、身体をおおむね30°側方へ傾斜させます。</li>
-<li>肩・骨盤・体幹の向きを確認し、局所的な圧迫や不要なねじれが生じないよう整えます。</li>
-<li>枕やクッションなどを使用して、傾斜した姿勢を安定して保持できるようにします。</li>
-<li>患者の状態と安楽性を確認し、ポジショニングが完了した時点で左側のカメラ映像で姿勢を確認します。</li>
-</ol>
-<div class="point"><b>確認：</b>「30°」は医学的な目標の選択項目です。個別の患者に適した姿勢は状態に応じて判断してください。</div>
-</div>
-
-<div id="guidance-lateral90" class="guidance-content" style="display:none">
-<h2>90°側臥位</h2>
-<ol>
-<li>患者を側臥位とし、頭部・体幹・骨盤の位置を安定させます。</li>
-<li>肩や骨盤が不自然に前後へねじれないよう、全身のアライメントを確認します。</li>
-<li>必要に応じて枕やクッションを使用し、姿勢を安定させます。</li>
-<li>患者の状態と安楽性を確認し、ポジショニングが完了した時点で左側のカメラ映像で姿勢を確認します。</li>
-</ol>
-<div class="point"><b>確認：</b>ポジショニング完了後、肩・骨盤・体幹の向きやねじれを確認します。</div>
-</div>
-
-<div id="guidance-other" class="guidance-content" style="display:none">
-<h2>その他</h2>
-<ol>
-<li>患者の状態やケアの目的に応じて、医学的な目標姿勢を設定します。</li>
-<li>必要な枕・クッションなどを使用し、患者に適した姿勢へ調整します。</li>
-<li>頭部・肩・体幹・骨盤などのアライメントと安楽性を確認します。</li>
-<li>ポジショニングが完了したら、左側の登録ボタンを押して、この患者の目標姿勢として保存します。</li>
-</ol>
-<div class="point"><b>登録：</b>「その他」では、画面上の幾何学的な指標だけで医学的な適否を判断せず、個別の臨床判断を優先してください。</div>
+<div id="guidanceContent" class="guidance-content">
+<div class="guidance-loading">手順を読み込んでいます…</div>
 </div>
 
 <div class="caution"><b>注意：</b>この画面の手順・角度・ねじれ表示はPoC用の補助情報です。医学的な正常／異常、褥瘡リスク、安全／危険を自動判定するものではありません。</div>
@@ -153,7 +113,6 @@ var lastMetrics=null,target=null;
 var medicalGoal=document.getElementById("medicalGoal");
 var registerTarget=null;
 var clearTargetBtn=null;
-var medicalGoalStatus=document.getElementById("medicalGoalStatus");
 var detailToggle=document.getElementById("detailToggle");
 var detailArea=document.getElementById("detailArea");
 detailToggle.onclick=function(){
@@ -162,14 +121,30 @@ detailToggle.onclick=function(){
   detailToggle.textContent=open?"詳細情報を表示":"詳細情報を非表示";
 };
 
-var targetStatus=document.getElementById("targetStatus");
+async function loadGuidance(goal){
+  var map={
+    supine:"guidance/supine.html",
+    tilt30:"guidance/tilt30.html",
+    lateral90:"guidance/lateral90.html",
+    other:"guidance/other.html"
+  };
+  var url=map[goal]||map.other;
+  var box=document.getElementById("guidanceContent");
+  if(!box)return;
+  box.innerHTML='<div class="guidance-loading">手順を読み込んでいます…</div>';
+  try{
+    var res=await fetch(url,{cache:"no-store"});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    box.innerHTML=await res.text();
+  }catch(e){
+    box.innerHTML='<div class="point"><b>手順を読み込めませんでした。</b><br>'+url+'</div>';
+    console.error(e);
+  }
+}
 medicalGoal.onchange=function(){
-  medicalGoalStatus.textContent="医学的な目標："+this.options[this.selectedIndex].text;
-  ["supine","tilt30","lateral90","other"].forEach(function(id){
-    var e=document.getElementById("guidance-"+id);
-    if(e)e.style.display=(id===this.value)?"block":"none";
-  },this);
+  loadGuidance(this.value);
 };
+loadGuidance(medicalGoal.value);
 
 
 function log(s){}function status(s,c){var e=document.getElementById("mainStatus");if(e){e.textContent=s;e.className="status "+(c||"")}}function step(n,s,c){}function setm(id,v){document.getElementById(id).textContent=v}function deg(x){return x*180/Math.PI}function la(a,b){var x=deg(Math.atan2(b.y-a.y,b.x-a.x));while(x>90)x-=180;while(x<-90)x+=180;return x}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
