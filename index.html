@@ -1,13 +1,20 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ポジショニング姿勢可視化ツール</title>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;padding:5px;background:#f3f5f7;color:#222;font-family:"Segoe UI","Yu Gothic",Meiryo,sans-serif}.wrap{max-width:1400px;margin:auto}.grid{display:grid;grid-template-columns:minmax(240px,2fr) 6px minmax(180px,1fr);gap:0;align-items:stretch;min-height:760px}.card{background:#fff;border:1px solid #d9dee3;border-radius:6px;padding:4px;box-shadow:0 1px 3px #0001}.stage{position:relative;width:100%;aspect-ratio:4/5;background:#111;border-radius:8px;overflow:hidden}#video,#overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.status{padding:5px 12px;border-radius:8px;margin:8px 0;background:#eef1f4;border-left:5px solid #777}.ok{border-left-color:#16803c!important;background:#eef9f1!important}.warn{border-left-color:#b77900!important;background:#fff8e6!important}.error{border-left-color:#c62828!important;background:#fff0f0!important}.running{border-left-color:#1565c0!important;background:#eef5ff!important}.controls{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}button{font:inherit;padding:9px 12px;border-radius:7px;border:1px solid #aeb6bf;background:#fff;cursor:pointer}button.primary{background:#1565c0;color:#fff}button:disabled{opacity:.45}.metric{display:grid;grid-template-columns:1fr auto;padding:10px 0;border-bottom:1px solid #e5e8eb}.value{font-weight:700}.level{text-align:center;font-size:20px;font-weight:700;padding:12px;border-radius:8px;margin:12px 0}.small{background:#eaf7ee}.medium{background:#fff5d9}.large{background:#ffe8e8}.note,.help{font-size:12px;line-height:1.55;color:#555;background:#f7f8f9;padding:10px;border-radius:7px;margin-top:12px}.help{font-size:13px;background:#fff8e6}.log{height:170px;overflow:auto;background:#111;color:#d8f3dc;padding:9px;border-radius:7px;font:12px/1.45 Consolas,monospace;white-space:pre-wrap}.step{display:flex;gap:8px;align-items:center;margin:6px 0}.dot{width:12px;height:12px;border-radius:50%;background:#bbb;flex:none}.dot.ok{background:#16803c}.dot.error{background:#c62828}.dot.running{background:#1565c0}.sub{font-size:12px;color:#666}.top-description{font-size:13px;color:#555;line-height:1.5;margin:4px 0 12px}
+<style>*{box-sizing:border-box}body{margin:0;padding:20px;background:#f3f5f7;color:#222;font-family:"Segoe UI","Yu Gothic",Meiryo,sans-serif}.wrap{max-width:1400px;margin:auto}.grid{display:grid;grid-template-columns:minmax(240px,2fr) 6px minmax(180px,1fr);gap:0;align-items:stretch;min-height:760px}.card{background:#fff;border:1px solid #d9dee3;border-radius:12px;padding:16px;box-shadow:0 1px 3px #0001}.stage{position:relative;width:100%;aspect-ratio:4/5;background:#111;border-radius:8px;overflow:hidden}#video,#overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.status{padding:10px 12px;border-radius:8px;margin:8px 0;background:#eef1f4;border-left:5px solid #777}.ok{border-left-color:#16803c!important;background:#eef9f1!important}.warn{border-left-color:#b77900!important;background:#fff8e6!important}.error{border-left-color:#c62828!important;background:#fff0f0!important}.running{border-left-color:#1565c0!important;background:#eef5ff!important}.controls{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}button{font:inherit;padding:9px 12px;border-radius:7px;border:1px solid #aeb6bf;background:#fff;cursor:pointer}button.primary{background:#1565c0;color:#fff}button:disabled{opacity:.45}.metric{display:grid;grid-template-columns:1fr auto;padding:10px 0;border-bottom:1px solid #e5e8eb}.value{font-weight:700}.level{text-align:center;font-size:20px;font-weight:700;padding:12px;border-radius:8px;margin:12px 0}.small{background:#eaf7ee}.medium{background:#fff5d9}.large{background:#ffe8e8}.note,.help{font-size:12px;line-height:1.55;color:#555;background:#f7f8f9;padding:10px;border-radius:7px;margin-top:12px}.help{font-size:13px;background:#fff8e6}.log{height:170px;overflow:auto;background:#111;color:#d8f3dc;padding:9px;border-radius:7px;font:12px/1.45 Consolas,monospace;white-space:pre-wrap}.step{display:flex;gap:8px;align-items:center;margin:6px 0}.dot{width:12px;height:12px;border-radius:50%;background:#bbb;flex:none}.dot.ok{background:#16803c}.dot.error{background:#c62828}.dot.running{background:#1565c0}.sub{font-size:12px;color:#666}.top-description{font-size:13px;color:#555;line-height:1.5;margin:4px 0 12px}
 .top-note{font-size:12px;color:#666}
-#targetPanel{margin-top:10px!important;padding:9px 10px!important}
-.target-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0}
+#targetPanel{
+  margin:0!important;
+  padding:0 0 0 10px!important;
+  border:0!important;
+  background:transparent!important;
+  display:flex;
+  align-items:center;
+  flex:none;
+}
+.target-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
 .target-step{font-weight:700;font-size:14px;white-space:nowrap}
 #medicalGoal{font-size:15px!important;padding:4px 7px!important}
-.target-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.target-status{font-size:12px;line-height:1.4;color:#555}
+.target-actions,.target-status{display:none!important}
 .guidance h2{margin:0 0 8px;font-size:19px}
 .guidance-title{font-size:22px;font-weight:700;margin-bottom:8px}
 .guidance-intro{font-size:13px;color:#555;line-height:1.55;margin-bottom:14px}
@@ -47,7 +54,7 @@
   overscroll-behavior:contain;
 }
 </style></head>
-<body><div class="wrap">
+<body><div class="wrap"><h1>ポジショニング姿勢可視化ツール</h1>
 <p class="top-description">
 <b>ねじれの視覚表示：</b>
 <span style="color:#2e8b57;font-weight:700">緑＝小</span> ／
@@ -55,11 +62,13 @@
 <span style="color:#c62828;font-weight:700">赤＝大</span>。
 肩・骨盤ラインと体幹軸の色と太さが変化し、矢印で方向を示します。
 <span class="top-note">医学的な危険度判定ではありません。</span>
-<br><b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p><div class="grid"><div class="camera-column"><main><div class="card"><div id="mainStatus" class="status">確認しています…</div><div class="stage"><video id="video" autoplay muted playsinline style="transform:scaleX(-1);-webkit-transform:scaleX(-1);"></video><canvas id="overlay"></canvas></div>
+<br><b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p><div class="grid"><div class="camera-column"><main><div class="card"><div id="mainStatus" class="status">MediaPipeを確認しています…</div><div class="stage"><video id="video" autoplay muted playsinline style="transform:scaleX(-1);-webkit-transform:scaleX(-1);"></video><canvas id="overlay"></canvas></div>
 
-<div id="targetPanel" style="border:2px solid #7a8b99;border-radius:10px;background:#f8fafb">
+<div class="controls">
+<button id="startBtn" class="primary" disabled>カメラ開始</button>
+<button id="stopBtn" disabled>停止</button>
+<div id="targetPanel">
   <div class="target-row">
-    <span class="target-step">① 医学的な目標</span>
     <label for="medicalGoal">目標姿勢：
       <select id="medicalGoal">
         <option value="supine">仰臥位</option>
@@ -69,22 +78,11 @@
       </select>
     </label>
   </div>
-  <div class="target-row">
-    <span class="target-step">② 完了後に登録</span>
-    <div class="target-actions">
-      <button id="registerTarget" disabled>この患者の目標姿勢として登録</button>
-      <button id="clearTarget">クリア</button>
-    </div>
-  </div>
-  <div class="target-status">
-    <span id="medicalGoalStatus">医学的な目標：仰臥位</span> ／
-    <span id="targetStatus">患者個別の目標姿勢：未登録</span>
-  </div>
 </div>
-<div class="controls"><button id="startBtn" class="primary" disabled>カメラ開始</button><button id="stopBtn" disabled>停止</button></div></div></main></div><div id="layoutDivider" class="layout-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="左右領域の幅を変更"></div><div class="procedure-column"><aside>
+</div></div></main></div><div id="layoutDivider" class="layout-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="左右領域の幅を変更"></div><div class="procedure-column"><aside>
 <div class="card guidance">
 <div class="guidance-title">ポジショニング手順</div>
-<div class="guidance-intro">「目標姿勢」で医学的な目標を選択してください。右側の手順は選択した目標に応じて切り替わります。ポジショニングを完了したら、左側の「この患者の目標姿勢として登録」を押してください。</div>
+<div class="guidance-intro">「目標姿勢」で医学的な目標を選択してください。右側の手順は選択した目標に応じて切り替わります。ポジショニングを完了したら、左側のカメラ映像で姿勢を確認してください。</div>
 
 <div id="guidance-supine" class="guidance-content">
 <h2>仰臥位</h2>
@@ -94,7 +92,7 @@
 <li>必要に応じて枕やクッションを使用し、患者が安楽に保持できる状態にします。</li>
 <li>ポジショニングが完了したら、左側のカメラ映像で姿勢を確認します。</li>
 </ol>
-<div class="point"><b>登録：</b>現在の姿勢がこの患者にとっての目標姿勢になった時点で、「この患者の目標姿勢として登録」を押します。</div>
+<div class="point"><b>確認：</b>ポジショニング完了後、現在の姿勢をカメラ映像と姿勢表示で確認します。</div>
 </div>
 
 <div id="guidance-tilt30" class="guidance-content" style="display:none">
@@ -103,9 +101,9 @@
 <li>患者を仰臥位から側方へ傾け、身体をおおむね30°側方へ傾斜させます。</li>
 <li>肩・骨盤・体幹の向きを確認し、局所的な圧迫や不要なねじれが生じないよう整えます。</li>
 <li>枕やクッションなどを使用して、傾斜した姿勢を安定して保持できるようにします。</li>
-<li>患者の状態と安楽性を確認し、ポジショニングが完了した時点で左側の登録ボタンを押します。</li>
+<li>患者の状態と安楽性を確認し、ポジショニングが完了した時点で左側のカメラ映像で姿勢を確認します。</li>
 </ol>
-<div class="point"><b>登録：</b>「30°」は医学的な目標の選択項目であり、画面上の角度表示は姿勢の可視化用です。個別の患者に適した姿勢は状態に応じて判断してください。</div>
+<div class="point"><b>確認：</b>「30°」は医学的な目標の選択項目です。個別の患者に適した姿勢は状態に応じて判断してください。</div>
 </div>
 
 <div id="guidance-lateral90" class="guidance-content" style="display:none">
@@ -114,9 +112,9 @@
 <li>患者を側臥位とし、頭部・体幹・骨盤の位置を安定させます。</li>
 <li>肩や骨盤が不自然に前後へねじれないよう、全身のアライメントを確認します。</li>
 <li>必要に応じて枕やクッションを使用し、姿勢を安定させます。</li>
-<li>患者の状態と安楽性を確認し、ポジショニングが完了した時点で左側の登録ボタンを押します。</li>
+<li>患者の状態と安楽性を確認し、ポジショニングが完了した時点で左側のカメラ映像で姿勢を確認します。</li>
 </ol>
-<div class="point"><b>登録：</b>登録時の姿勢を、この患者にとっての実際の目標姿勢として保存し、その後の姿勢変化との比較に使用します。</div>
+<div class="point"><b>確認：</b>ポジショニング完了後、肩・骨盤・体幹の向きやねじれを確認します。</div>
 </div>
 
 <div id="guidance-other" class="guidance-content" style="display:none">
@@ -153,8 +151,8 @@
 (function(){"use strict";var video=document.getElementById("video"),canvas=document.getElementById("overlay"),ctx=canvas.getContext("2d"),pose=null,camera=null,running=false,smooth=null;
 var lastMetrics=null,target=null;
 var medicalGoal=document.getElementById("medicalGoal");
-var registerTarget=document.getElementById("registerTarget");
-var clearTargetBtn=document.getElementById("clearTarget");
+var registerTarget=null;
+var clearTargetBtn=null;
 var medicalGoalStatus=document.getElementById("medicalGoalStatus");
 var detailToggle=document.getElementById("detailToggle");
 var detailArea=document.getElementById("detailArea");
@@ -172,8 +170,7 @@ medicalGoal.onchange=function(){
     if(e)e.style.display=(id===this.value)?"block":"none";
   },this);
 };
-clearTargetBtn.onclick=function(){target=null;targetStatus.textContent="患者個別の目標姿勢：未登録";};
-registerTarget.onclick=function(){if(lastMetrics)setTarget(lastMetrics);};
+
 
 function log(s){}function status(s,c){var e=document.getElementById("mainStatus");if(e){e.textContent=s;e.className="status "+(c||"")}}function step(n,s,c){}function setm(id,v){document.getElementById(id).textContent=v}function deg(x){return x*180/Math.PI}function la(a,b){var x=deg(Math.atan2(b.y-a.y,b.x-a.x));while(x>90)x-=180;while(x<-90)x+=180;return x}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
 function classify(t,o){var v=Math.max(Math.abs(t),Math.abs(o)*.8);return v<6?["小","small"]:v<12?["中","medium"]:["大","large"]}function resize(){var d=window.devicePixelRatio||1;canvas.width=Math.round(canvas.clientWidth*d);canvas.height=Math.round(canvas.clientHeight*d);ctx.setTransform(d,0,0,d,0,0)}function vr(){var W=canvas.clientWidth,H=canvas.clientHeight,vw=video.videoWidth||16,vh=video.videoHeight||9,va=vw/vh,ca=W/H,w,h,x,y;if(va>ca){w=W;h=W/va;x=0;y=(H-h)/2}else{h=H;w=H*va;y=0;x=(W-w)/2}return{x:x,y:y,w:w,h:h}}function mp(p,r){return{x:r.x+p.x*r.w,y:r.y+p.y*r.h}}function line(a,b,w){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineWidth=w||3;ctx.stroke()}function calc(l){
@@ -210,12 +207,11 @@ function setTarget(m){
     pc:{x:m.pc.x,y:m.pc.y},
     medicalGoal:goal
   };
-  document.getElementById("targetStatus").textContent =
-    "登録済み（"+goal+"／登録時：ねじれ "+(target.t>=0?"+":"")+target.t.toFixed(1)+"°、左右ずれ "+target.o.toFixed(1)+"%）";
+  
 }
 function clearTarget(){
   target=null;
-  document.getElementById("targetStatus").textContent="未登録";
+  
 }
 function targetDiff(m){
   if(!target)return null;
@@ -240,8 +236,7 @@ if(p[x[0]]&&p[x[1]])line(p[x[0]],p[x[1]],2)
 });
 if(!m)return;
 lastMetrics=m;
-registerTarget.disabled=false;
-document.getElementById("registerTarget").disabled=false;
+
 
 var sc=mp(m.sc,r),pc=mp(m.pc,r),t=m.t,abs=Math.abs(t);
 var col=abs<6?"#2e8b57":abs<12?"#e0a000":"#d33";
@@ -325,7 +320,7 @@ step(4,"検出中・評価中","running");
 draw(res.poseLandmarks,m);
 }
 function check(){if(typeof Pose==="undefined"){step(1,"失敗","error");status("MediaPipeライブラリが読み込まれていません","error");log("ERROR: Pose が未定義です。CDNアクセスを確認してください。");return false}step(1,"OK","ok");log("MediaPipe Pose ライブラリ読み込み成功");return true}
-function create(){if(pose)return true;if(!check())return false;try{pose=new Pose({locateFile:function(f){return"https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+f}});pose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(results);step(2,"OK","ok");status("カメラを開始できます。","ok");document.getElementById("startBtn").disabled=false;log("Poseオブジェクト作成成功");return true}catch(e){step(2,"失敗","error");status("初期化に失敗しました","error");log("Pose ERROR: "+e.message);return false}}
+function create(){if(pose)return true;if(!check())return false;try{pose=new Pose({locateFile:function(f){return"https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+f}});pose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(results);step(2,"OK","ok");status("Pose処理の準備完了。カメラを開始できます。","ok");document.getElementById("startBtn").disabled=false;log("Poseオブジェクト作成成功");return true}catch(e){step(2,"失敗","error");status("Pose処理の初期化に失敗しました","error");log("Pose ERROR: "+e.message);return false}}
 async function start(){if(!create())return;stop(false);status("カメラを起動しています…","running");step(3,"起動中","running");if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){step(3,"非対応","error");status("このブラウザーではカメラAPIを利用できません","error");log("getUserMedia が利用できません");return}try{var s=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:false});video.srcObject=s;await video.play();step(3,"OK","ok");status("カメラ映像をリアルタイム解析しています…","running");running=true;smooth=null;step(4,"検出待ち","running");log("姿勢推定を開始しました。肩(11/12)・骨盤(23/24)の4点を待機中");log("カメラ開始: "+video.videoWidth+"x"+video.videoHeight);camera=new Camera(video,{onFrame:async function(){if(running)await pose.send({image:video})},width:1280,height:720});camera.start();document.getElementById("stopBtn").disabled=false}catch(e){step(3,"失敗","error");status("カメラを起動できませんでした","error");log("Camera ERROR: "+e.name+" / "+e.message);if(e.name==="NotAllowedError")log("カメラ使用許可を確認してください")}}
 function stop(show){running=false;if(camera){try{camera.stop()}catch(e){}camera=null}if(video.srcObject){video.srcObject.getTracks().forEach(function(t){t.stop()});video.srcObject=null}document.getElementById("stopBtn").disabled=true;if(show!==false){status("停止しました","warn");step(4,"停止","");log("カメラ停止")}}
 document.getElementById("startBtn").onclick=start;document.getElementById("stopBtn").onclick=function(){stop(true)};window.onresize=resize;log("HTML起動 / classic script版 / file://対応");if(check())create();})();
