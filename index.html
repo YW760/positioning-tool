@@ -48,32 +48,25 @@
 .procedure-column .guidance{
   flex:1 1 auto;
   min-height:0;
-  overflow-y:scroll;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.procedure-column .guidance-content{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
+  padding-right:14px;
 }
-.procedure-column .guidance{
-  scrollbar-width:auto;
-}
-
-.procedure-column .guidance::-webkit-scrollbar{
-  width:10px;
-}
-
-.procedure-column .guidance::-webkit-scrollbar-track{
-  background:#e5e5e5;
-  border-radius:5px;
-}
-
-.procedure-column .guidance::-webkit-scrollbar-thumb{
-  background:#888;
-  border-radius:5px;
-}
-
-.procedure-column .guidance::-webkit-scrollbar-thumb:hover{
-  background:#666;
-}
+.procedure-column .guidance-content::-webkit-scrollbar{width:8px}
+.procedure-column .guidance-content::-webkit-scrollbar-track{background:#e5e5e5;border-radius:4px}
+.procedure-column .guidance-content::-webkit-scrollbar-thumb{background:#888;border-radius:4px}
+.guidance-scrollbar{position:absolute;right:4px;top:58px;bottom:54px;width:8px;background:#e5e5e5;border-radius:4px;pointer-events:none}
+.guidance-scrollbar-thumb{position:absolute;left:0;top:0;width:100%;min-height:28px;background:#888;border-radius:4px}
 </style></head>
 <body><div class="wrap"><h1>ポジショニング姿勢可視化ツール</h1>
 <p class="top-description">
@@ -108,6 +101,7 @@
 <div id="guidanceContent" class="guidance-content">
 <div class="guidance-loading">手順を読み込んでいます…</div>
 </div>
+<div class="guidance-scrollbar" aria-hidden="true"><div id="guidanceScrollbarThumb" class="guidance-scrollbar-thumb"></div></div>
 
 <div class="caution"><b>注意：</b>この画面の手順・角度・ねじれ表示はPoC用の補助情報です。医学的な正常／異常、褥瘡リスク、安全／危険を自動判定するものではありません。</div>
 </div>
@@ -157,6 +151,7 @@ async function loadGuidance(goal){
     var res=await fetch(url,{cache:"no-store"});
     if(!res.ok)throw new Error("HTTP "+res.status);
     box.innerHTML=await res.text();
+    requestAnimationFrame(function(){updateGuidanceScrollbar();});
   }catch(e){
     box.innerHTML='<div class="point"><b>手順を読み込めませんでした。</b><br>'+url+'</div>';
     console.error(e);
@@ -165,7 +160,32 @@ async function loadGuidance(goal){
 medicalGoal.onchange=function(){
   loadGuidance(this.value);
 };
+
+var guidanceBox=document.getElementById("guidanceContent");
+var guidanceThumb=document.getElementById("guidanceScrollbarThumb");
+function updateGuidanceScrollbar(){
+  if(!guidanceBox||!guidanceThumb)return;
+  var h=guidanceBox.clientHeight, sh=guidanceBox.scrollHeight, st=guidanceBox.scrollTop;
+  var track=guidanceBox.parentElement.querySelector(".guidance-scrollbar");
+  if(!track)return;
+  var th=track.clientHeight;
+  if(sh<=h+1){
+    track.style.display="none";
+    return;
+  }
+  track.style.display="block";
+  var thumbH=Math.max(28,Math.round(th*h/sh));
+  var maxTop=th-thumbH;
+  guidanceThumb.style.height=thumbH+"px";
+  guidanceThumb.style.top=(maxTop*st/(sh-h))+"px";
+}
+if(guidanceBox){
+  guidanceBox.addEventListener("scroll",updateGuidanceScrollbar,{passive:true});
+  window.addEventListener("resize",updateGuidanceScrollbar);
+}
 loadGuidance(medicalGoal.value);
+setTimeout(updateGuidanceScrollbar,100);
+setTimeout(updateGuidanceScrollbar,500);
 
 
 function log(s){}function status(s,c){var e=document.getElementById("mainStatus");if(e){e.textContent=s;e.className="status "+(c||"")}}function step(n,s,c){}function setm(id,v){document.getElementById(id).textContent=v}function deg(x){return x*180/Math.PI}function la(a,b){var x=deg(Math.atan2(b.y-a.y,b.x-a.x));while(x>90)x-=180;while(x<-90)x+=180;return x}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
