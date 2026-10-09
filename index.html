@@ -39,7 +39,7 @@ html, body {
     color: #666;
 }
 
-/* 左右2カラムグリッド：高さにしっかり収め、はみ出させない */
+/* 左右2カラムグリッド */
 .grid {
     display: grid;
     grid-template-columns: minmax(260px, 1.4fr) 6px minmax(220px, 1fr);
@@ -94,7 +94,7 @@ html, body {
 .error { border-left-color: #c62828!important; background: #fff0f0!important; }
 .running { border-left-color: #1565c0!important; background: #eef5ff!important; }
 
-/* 映像ステージ：残りの領域を自動で占有し、ボタンを押し出さないようにする */
+/* 映像ステージ */
 .stage {
     position: relative;
     width: 100%;
@@ -426,7 +426,7 @@ button:disabled { opacity: .45; }
 
     ctx.strokeStyle = "rgba(255,255,255,.8)";
     ctx.fillStyle = "rgba(255,255,255,.9)";
-    [[11,23],[12,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28']].forEach(function(x){
+    [[11,23],[12,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28]].forEach(function(x){
       if(p[x[0]] && p[x[1]]) line(p[x[0]], p[x[1]], 2);
     });
 
@@ -532,85 +532,3 @@ button:disabled { opacity: .45; }
     stop(false);
     status("カメラを起動しています…", "running");
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-      status("このブラウザーではカメラAPIを利用できません", "error");
-      return;
-    }
-    try {
-      var s = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: "user"
-        },
-        audio: false
-      });
-      video.srcObject = s;
-      await video.play();
-      status("リアルタイム骨格解析中", "running");
-      running = true;
-      smooth = null;
-      camera = new Camera(video, {
-        onFrame: async function(){
-          if(running) await pose.send({image: video});
-        },
-        width: 1280,
-        height: 720
-      });
-      camera.start();
-      document.getElementById("stopBtn").disabled = false;
-    } catch(e){
-      status("カメラを起動できませんでした", "error");
-    }
-  }
-
-  function stop(show){
-    running = false;
-    if(camera){ try{ camera.stop(); }catch(e){} camera = null; }
-    if(video.srcObject){
-      video.srcObject.getTracks().forEach(function(t){ t.stop(); });
-      video.srcObject = null;
-    }
-    document.getElementById("stopBtn").disabled = true;
-    if(show !== false) status("停止しました", "warn");
-  }
-
-  document.getElementById("startBtn").onclick = start;
-  document.getElementById("stopBtn").onclick = function(){ stop(true); };
-
-  window.onresize = resize;
-  if(check()) create();
-})();
-
-/* 分割バー操作 */
-(function(){
-  var grid = document.querySelector(".grid");
-  var divider = document.getElementById("layoutDivider");
-  if(!grid || !divider) return;
-  var dragging = false;
-
-  function setWidth(clientX){
-    var rect = grid.getBoundingClientRect();
-    var x = clientX - rect.left;
-    var minLeft = Math.max(200, rect.width * 0.3);
-    var maxLeft = Math.min(rect.width - 180, rect.width * 0.85);
-    var left = Math.max(minLeft, Math.min(maxLeft, x));
-    var right = Math.max(150, rect.width - left - 6);
-    grid.style.gridTemplateColumns = left + "px 6px " + right + "px";
-  }
-
-  divider.addEventListener("pointerdown", function(e){
-    dragging = true; divider.classList.add("dragging");
-    divider.setPointerCapture(e.pointerId); e.preventDefault();
-  });
-  divider.addEventListener("pointermove", function(e){ if(dragging) setWidth(e.clientX); });
-  divider.addEventListener("pointerup", function(e){
-    dragging = false; divider.classList.remove("dragging");
-    try{ divider.releasePointerCapture(e.pointerId); }catch(_){}
-  });
-  divider.addEventListener("pointercancel", function(){
-    dragging = false; divider.classList.remove("dragging");
-  });
-})();
-</script>
-</body>
-</html>
