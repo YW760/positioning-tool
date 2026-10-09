@@ -13,9 +13,8 @@
 }
 html, body {
     height: 100%;
-    height: 100dvh;
     margin: 0;
-    padding: 0;
+    padding: 4px;
     background: #f3f5f7;
     color: #222;
     font-family: "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
@@ -23,19 +22,16 @@ html, body {
 }
 .wrap {
     max-width: 1400px;
-    height: 100vh;
-    height: 100dvh;
     margin: auto;
+    height: calc(100vh - 8px);
     display: flex;
     flex-direction: column;
-    padding: 6px;
-    gap: 6px;
 }
 .top-description {
     font-size: 12px;
     color: #555;
-    line-height: 1.35;
-    margin: 0;
+    line-height: 1.4;
+    margin: 0 0 6px 0;
     flex: none;
 }
 .top-note {
@@ -43,7 +39,7 @@ html, body {
     color: #666;
 }
 
-/* 左右2カラムレイアウト */
+/* 左右2カラムグリッド：高さにしっかり収め、はみ出させない */
 .grid {
     display: grid;
     grid-template-columns: minmax(260px, 1.4fr) 6px minmax(220px, 1fr);
@@ -52,7 +48,6 @@ html, body {
     min-height: 0;
     overflow: hidden;
 }
-
 .card {
     background: #fff;
     border: 1px solid #d9dee3;
@@ -64,7 +59,6 @@ html, body {
     height: 100%;
     min-height: 0;
 }
-
 .camera-column, .procedure-column {
     min-width: 0;
     min-height: 0;
@@ -72,14 +66,12 @@ html, body {
     display: flex;
     flex-direction: column;
 }
-
 .camera-column > main {
     height: 100%;
     min-height: 0;
     display: flex;
     flex-direction: column;
 }
-
 .procedure-column > aside {
     height: 100%;
     min-height: 0;
@@ -87,7 +79,7 @@ html, body {
     flex-direction: column;
 }
 
-/* ステータスバー（固定サイズ） */
+/* ステータスバー */
 .status {
     padding: 6px 10px;
     border-radius: 6px;
@@ -102,7 +94,7 @@ html, body {
 .error { border-left-color: #c62828!important; background: #fff0f0!important; }
 .running { border-left-color: #1565c0!important; background: #eef5ff!important; }
 
-/* カメラ映像ステージ：残りの高さを柔軟に占有 */
+/* 映像ステージ：残りの領域を自動で占有し、ボタンを押し出さないようにする */
 .stage {
     position: relative;
     width: 100%;
@@ -120,7 +112,7 @@ html, body {
     object-fit: cover;
 }
 
-/* 操作ボタン領域：絶対に隠れないよう flex: none で固定 */
+/* 操作ボタン領域：flex: none で確実に固定表示 */
 .controls {
     display: flex;
     gap: 6px;
@@ -146,7 +138,7 @@ button.primary {
 }
 button:disabled { opacity: .45; }
 
-/* 手順・評価パネル */
+/* 右側パネル・手順 */
 .guidance {
     flex: 1 1 0;
     min-height: 0;
@@ -434,7 +426,7 @@ button:disabled { opacity: .45; }
 
     ctx.strokeStyle = "rgba(255,255,255,.8)";
     ctx.fillStyle = "rgba(255,255,255,.9)";
-    [[11,23],[12,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28]].forEach(function(x){
+    [[11,23],[12,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28']].forEach(function(x){
       if(p[x[0]] && p[x[1]]) line(p[x[0]], p[x[1]], 2);
     });
 
@@ -547,4 +539,78 @@ button:disabled { opacity: .45; }
       var s = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
-          height: { ideal: 7
+          height: { ideal: 720 },
+          facingMode: "user"
+        },
+        audio: false
+      });
+      video.srcObject = s;
+      await video.play();
+      status("リアルタイム骨格解析中", "running");
+      running = true;
+      smooth = null;
+      camera = new Camera(video, {
+        onFrame: async function(){
+          if(running) await pose.send({image: video});
+        },
+        width: 1280,
+        height: 720
+      });
+      camera.start();
+      document.getElementById("stopBtn").disabled = false;
+    } catch(e){
+      status("カメラを起動できませんでした", "error");
+    }
+  }
+
+  function stop(show){
+    running = false;
+    if(camera){ try{ camera.stop(); }catch(e){} camera = null; }
+    if(video.srcObject){
+      video.srcObject.getTracks().forEach(function(t){ t.stop(); });
+      video.srcObject = null;
+    }
+    document.getElementById("stopBtn").disabled = true;
+    if(show !== false) status("停止しました", "warn");
+  }
+
+  document.getElementById("startBtn").onclick = start;
+  document.getElementById("stopBtn").onclick = function(){ stop(true); };
+
+  window.onresize = resize;
+  if(check()) create();
+})();
+
+/* 分割バー操作 */
+(function(){
+  var grid = document.querySelector(".grid");
+  var divider = document.getElementById("layoutDivider");
+  if(!grid || !divider) return;
+  var dragging = false;
+
+  function setWidth(clientX){
+    var rect = grid.getBoundingClientRect();
+    var x = clientX - rect.left;
+    var minLeft = Math.max(200, rect.width * 0.3);
+    var maxLeft = Math.min(rect.width - 180, rect.width * 0.85);
+    var left = Math.max(minLeft, Math.min(maxLeft, x));
+    var right = Math.max(150, rect.width - left - 6);
+    grid.style.gridTemplateColumns = left + "px 6px " + right + "px";
+  }
+
+  divider.addEventListener("pointerdown", function(e){
+    dragging = true; divider.classList.add("dragging");
+    divider.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  divider.addEventListener("pointermove", function(e){ if(dragging) setWidth(e.clientX); });
+  divider.addEventListener("pointerup", function(e){
+    dragging = false; divider.classList.remove("dragging");
+    try{ divider.releasePointerCapture(e.pointerId); }catch(_){}
+  });
+  divider.addEventListener("pointercancel", function(){
+    dragging = false; divider.classList.remove("dragging");
+  });
+})();
+</script>
+</body>
+</html>
