@@ -4,16 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>ポジショニング姿勢可視化ツール</title>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 <style>
 * {
-    box-sizing: border-box;
+    box-sizing: border-box
 }
-html, body {
-    height: 100%;
-    height: 100dvh;
+body {
     margin: 0;
     padding: 4px;
     background: #f3f5f7;
@@ -25,23 +21,10 @@ html, body {
     max-width: 1400px;
     margin: auto;
     height: calc(100vh - 8px);
-    height: calc(100dvh - 8px);
     display: flex;
     flex-direction: column;
 }
-.top-description {
-    font-size: 12px;
-    color: #555;
-    line-height: 1.4;
-    margin: 0 0 6px 0;
-    flex: none;
-}
-.top-note {
-    font-size: 11px;
-    color: #666;
-}
-
-/* 左右2カラムグリッド：画面の高さに合わせて柔軟に伸縮し、はみ出さないように修正 */
+/* 左右2カラムグリッド：固定高さを廃止し、画面の高さにぴったり収める */
 .grid {
     display: grid;
     grid-template-columns: minmax(240px, 2fr) 6px minmax(180px, 1fr);
@@ -49,7 +32,7 @@ html, body {
     align-items: stretch;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow: hidden
 }
 .card {
     background: #fff;
@@ -83,8 +66,6 @@ html, body {
     display: flex;
     flex-direction: column;
 }
-
-/* カメラ映像ステージ：残りの高さを柔軟に占有し、ボタンを押し出さないようにする */
 .stage {
     position: relative;
     width: 100%;
@@ -92,14 +73,14 @@ html, body {
     min-height: 0;
     background: #111;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: hidden
 }
 #video, #overlay {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain
 }
 .status {
     padding: 8px 12px;
@@ -112,19 +93,19 @@ html, body {
 }
 .ok {
     border-left-color: #16803c!important;
-    background: #eef9f1!important;
+    background: #eef9f1!important
 }
 .warn {
     border-left-color: #b77900!important;
-    background: #fff8e6!important;
+    background: #fff8e6!important
 }
 .error {
     border-left-color: #c62828!important;
-    background: #fff0f0!important;
+    background: #fff0f0!important
 }
 .running {
     border-left-color: #1565c0!important;
-    background: #eef5ff!important;
+    background: #eef5ff!important
 }
 .controls {
     display: flex;
@@ -136,19 +117,18 @@ html, body {
 }
 button {
     font: inherit;
-    font-size: 12px;
     padding: 7px 12px;
     border-radius: 7px;
     border: 1px solid #aeb6bf;
     background: #fff;
-    cursor: pointer;
+    cursor: pointer
 }
 button.primary {
     background: #1565c0;
-    color: #fff;
+    color: #fff
 }
 button:disabled {
-    opacity: .45;
+    opacity: .45
 }
 .metric {
     display: grid;
@@ -158,7 +138,7 @@ button:disabled {
     font-size: 12px;
 }
 .value {
-    font-weight: 700;
+    font-weight: 700
 }
 .level {
     text-align: center;
@@ -166,16 +146,16 @@ button:disabled {
     font-weight: 700;
     padding: 5px;
     border-radius: 8px;
-    margin: 4px 0;
+    margin: 4px 0
 }
 .small {
-    background: #eaf7ee;
+    background: #eaf7ee
 }
 .medium {
-    background: #fff5d9;
+    background: #fff5d9
 }
 .large {
-    background: #ffe8e8;
+    background: #ffe8e8
 }
 .note, .help {
     font-size: 11px;
@@ -188,7 +168,8 @@ button:disabled {
     flex: none;
 }
 .help {
-    background: #fff8e6;
+    font-size: 12px;
+    background: #fff8e6
 }
 .log {
     height: 120px;
@@ -205,27 +186,38 @@ button:disabled {
     display: flex;
     gap: 8px;
     align-items: center;
-    margin: 6px 0;
+    margin: 6px 0
 }
 .dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     background: #bbb;
-    flex: none;
+    flex: none
 }
 .dot.ok {
-    background: #16803c;
+    background: #16803c
 }
 .dot.error {
-    background: #c62828;
+    background: #c62828
 }
 .dot.running {
-    background: #1565c0;
+    background: #1565c0
 }
 .sub {
     font-size: 12px;
-    color: #666;
+    color: #666
+}
+.top-description {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.4;
+    margin: 0 0 6px 0;
+    flex: none;
+}
+.top-note {
+    font-size: 11px;
+    color: #666
 }
 #targetPanel {
     margin: 0!important;
@@ -241,42 +233,47 @@ button:disabled {
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
-    margin: 0;
+    margin: 0
+}
+.target-step {
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap
 }
 #medicalGoal {
     font-size: 12px!important;
-    padding: 4px 6px!important;
+    padding: 4px 6px!important
 }
 .target-actions, .target-status {
-    display: none!important;
+    display: none!important
 }
 .guidance h2 {
     margin: 0 0 6px;
-    font-size: 16px;
+    font-size: 16px
 }
 .guidance-title {
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 6px
 }
 .guidance-intro {
     font-size: 12px;
     color: #555;
     line-height: 1.4;
-    margin-bottom: 8px;
+    margin-bottom: 8px
 }
 .guidance-loading {
     padding: 8px 0;
     color: #666;
-    font-size: 12px;
+    font-size: 12px
 }
 .guidance ol {
     margin: 6px 0 0 18px;
-    padding: 0;
+    padding: 0
 }
 .guidance li {
     margin: 6px 0;
-    line-height: 1.4;
+    line-height: 1.4
 }
 .guidance .point {
     padding: 8px 10px;
@@ -284,7 +281,7 @@ button:disabled {
     background: #f7f8f9;
     margin-top: 8px;
     font-size: 12px;
-    line-height: 1.4;
+    line-height: 1.4
 }
 .guidance .caution {
     padding: 8px 10px;
@@ -314,10 +311,10 @@ button:disabled {
     border-radius: 3px;
     position: relative;
     touch-action: none;
-    height: 100%;
+    min-height: 100%
 }
 .layout-divider:hover, .layout-divider.dragging {
-    background: #8fa0ad;
+    background: #8fa0ad
 }
 .layout-divider::after {
     content: "⋮";
@@ -326,10 +323,21 @@ button:disabled {
     left: 50%;
     transform: translate(-50%, -50%);
     color: #65727c;
-    font-size: 16px;
+    font-size: 16px
 }
 
-/* 右側「ポジショニング手順」のカード内を縦スクロール */
+@media(max-width:900px) {
+.grid {
+    grid-template-columns: minmax(200px, 2fr) 6px minmax(150px, 1fr)
+}
+}
+
+@media(max-width:700px) {
+.grid {
+    grid-template-columns: minmax(160px, 2fr) 5px minmax(120px, 1fr)
+}
+}
+/* 右側「ポジショニング手順」のカードだけを縦スクロール */
 .procedure-column {
     min-width: 0;
     overflow: hidden;
@@ -352,7 +360,9 @@ button:disabled {
 </style>
 </head>
 <body>
+<!-- 修正: 閉じタグの抜け（>）を修正 -->
 <div class="wrap">
+
 <p class="top-description"> <b>ねじれの視覚表示：</b> <span style="color:#2e8b57;font-weight:700">緑＝小</span> ／ <span style="color:#b77900;font-weight:700">黄＝中</span> ／ <span style="color:#c62828;font-weight:700">赤＝大</span>。
   肩・骨盤ラインと体幹軸の色と太さが変化し、矢印で方向を示します。 <span class="top-note">医学的な危険度判定ではありません。</span> <br>
   <b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p>
@@ -641,4 +651,42 @@ async function start(){
   }
 }
 function stop(show){running=false;if(camera){try{camera.stop()}catch(e){}camera=null}if(video.srcObject){video.srcObject.getTracks().forEach(function(t){t.stop()});video.srcObject=null}document.getElementById("stopBtn").disabled=true;if(show!==false){status("停止しました","warn");step(4,"停止","");log("カメラ停止")}}
-document.getElementById("startBtn").onclick=start;document.getElementById("stop
+document.getElementById("startBtn").onclick=start;document.getElementById("stopBtn").onclick=function(){stop(true)};window.onresize=resize;log("HTML起動 / classic script版 / file://対応");if(check())create();})();
+
+(function(){
+  var grid=document.querySelector(".grid");
+  var divider=document.getElementById("layoutDivider");
+  if(!grid || !divider) return;
+  var dragging=false;
+  function setWidth(clientX){
+    var rect=grid.getBoundingClientRect();
+    var x=clientX-rect.left;
+    var minLeft=Math.max(240,rect.width*0.35);
+    var maxLeft=Math.min(rect.width-180,rect.width*0.85);
+    var left=Math.max(minLeft,Math.min(maxLeft,x));
+    var right=Math.max(180,rect.width-left-6);
+    grid.style.gridTemplateColumns=left+"px 6px "+right+"px";
+  }
+  divider.addEventListener("pointerdown",function(e){
+    dragging=true; divider.classList.add("dragging");
+    divider.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  divider.addEventListener("pointermove",function(e){if(dragging)setWidth(e.clientX);});
+  divider.addEventListener("pointerup",function(e){
+    dragging=false; divider.classList.remove("dragging");
+    try{divider.releasePointerCapture(e.pointerId);}catch(_){}
+  });
+  divider.addEventListener("pointercancel",function(){
+    dragging=false; divider.classList.remove("dragging");
+  });
+  divider.addEventListener("keydown",function(e){
+    if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+    var rect=grid.getBoundingClientRect();
+    var current=grid.children[0].getBoundingClientRect().width;
+    setWidth(rect.left+current+(e.key==="ArrowLeft"?-20:20));
+    e.preventDefault();
+  });
+})();
+</script>
+</body>
+</html>
