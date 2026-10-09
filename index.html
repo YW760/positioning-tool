@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ポジショニング姿勢可視化ツール</title>
 
-<!-- 安定版CDNから自動読み込み（失敗時は動的インポートでリカバリ） -->
+<!-- 安定版CDNから自動読み込み -->
 <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js"></script>
 <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
 
@@ -175,7 +175,7 @@ button:disabled { opacity: .45; }
   var video = document.getElementById("video"),
       canvas = document.getElementById("overlay"),
       ctx = canvas.getContext("2d"),
-      pose = null, camera = null, running = false, smooth = null;
+      pose = null, camera = null, running = false, smooth = null, isProcessing = false;
   var medicalGoal = document.getElementById("medicalGoal");
   var detailToggle = document.getElementById("detailToggle");
   var detailArea = document.getElementById("detailArea");
@@ -343,6 +343,7 @@ button:disabled { opacity: .45; }
   }
 
   function results(res){
+    isProcessing = false; // 処理完了フラグを戻す
     if(!res.poseLandmarks){
       document.getElementById("level").textContent = "人物を検出できません";
       document.getElementById("level").className = "level medium";
@@ -361,7 +362,7 @@ button:disabled { opacity: .45; }
 
   function initApp(){
     if (typeof window.Pose === "undefined" || typeof window.Camera === "undefined") {
-      status("ライブラリ読込中またはブロック中…お待ちください", "warn");
+      status("ライブラリ読込中…お待ちください", "warn");
       setTimeout(initApp, 1000);
       return;
     }
@@ -392,11 +393,12 @@ button:disabled { opacity: .45; }
     status("カメラを起動しています…", "running");
     
     try {
-      running = true; smooth = null;
+      running = true; smooth = null; isProcessing = false;
       // 内側カメラ（前面カメラ）を指定
       camera = new window.Camera(video, {
         onFrame: async function(){
-          if(running && pose) {
+          if(running && pose && !isProcessing) {
+            isProcessing = true; // 前回の推論が完了するまで次のフレームを送らない
             await pose.send({image: video});
           }
         },
@@ -410,11 +412,13 @@ button:disabled { opacity: .45; }
     } catch(e){
       status("カメラ起動失敗: " + (e.message || e.name), "error");
       running = false;
+      isProcessing = false;
     }
   }
 
   function stop(show){
     running = false;
+    isProcessing = false;
     if(camera){ try{ camera.stop(); }catch(e){} camera = null; }
     if(video.srcObject){
       video.srcObject.getTracks().forEach(function(t){ t.stop(); });
