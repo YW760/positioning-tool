@@ -24,7 +24,6 @@ body {
     display: flex;
     flex-direction: column;
 }
-/* 左右2カラムグリッド：固定高さを廃止し、画面の高さにぴったり収める */
 .grid {
     display: grid;
     grid-template-columns: minmax(240px, 2fr) 6px minmax(180px, 1fr);
@@ -357,10 +356,21 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
 }
+
+/* 縦向き・横向きごとの高さ上限制限（縦は最大1200px、横は最大760pxを超えない） */
+@media (orientation: portrait) {
+.grid {
+    max-height: 1200px !important;
+}
+}
+@media (orientation: landscape) {
+.grid {
+    max-height: 760px !important;
+}
+}
 </style>
 </head>
 <body>
-<!-- 修正: 閉じタグの抜け（>）を修正 -->
 <div class="wrap">
 
 <p class="top-description"> <b>ねじれの視覚表示：</b> <span style="color:#2e8b57;font-weight:700">緑＝小</span> ／ <span style="color:#b77900;font-weight:700">黄＝中</span> ／ <span style="color:#c62828;font-weight:700">赤＝大</span>。
