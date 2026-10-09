@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ポジショニング姿勢可視化ツール</title>
 
-<!-- 同一フォルダ内のスクリプトを読み込み -->
-<script src="./camera_utils.js"></script>
-<script src="./pose.js"></script>
+<!-- 信頼性の高いCDNからライブラリを一括読み込み -->
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js"></script>
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/drawing_utils.js"></script>
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -359,22 +360,15 @@ button:disabled { opacity: .45; }
     draw(res.poseLandmarks, m);
   }
 
-  function check(){
-    if(typeof window.Pose === "undefined" || typeof window.Camera === "undefined"){
-      status("エラー: ライブラリが読み込まれていません", "error");
-      return false;
+  function initApp(){
+    if (typeof window.Pose === "undefined" || typeof window.Camera === "undefined") {
+      status("エラー: ライブラリの読み込みがブロックされています", "error");
+      return;
     }
-    return true;
-  }
-
-  function create(){
-    if(pose) return true;
-    if(!check()) return false;
     try {
-      var basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
       pose = new window.Pose({
         locateFile: function(file){
-          return basePath + file;
+          return "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/" + file;
         }
       });
       pose.setOptions({
@@ -387,15 +381,13 @@ button:disabled { opacity: .45; }
       pose.onResults(results);
       status("カメラを開始できます。", "ok");
       document.getElementById("startBtn").disabled = false;
-      return true;
     } catch(e){
       status("初期化エラー: " + e.message, "error");
-      return false;
     }
   }
 
   async function start(){
-    if(!create()) return;
+    if(!pose) initApp();
     stop(false);
     status("カメラを起動しています…", "running");
     
@@ -412,7 +404,7 @@ button:disabled { opacity: .45; }
         height: 720,
         facingMode: "user"
       });
-      camera.start();
+      await camera.start();
       status("リアルタイム骨格解析中", "running");
       document.getElementById("stopBtn").disabled = false;
     } catch(e){
@@ -440,10 +432,9 @@ button:disabled { opacity: .45; }
     setTimeout(resize, 300);
   });
 
+  // 読み込み完了後に初期化
   window.addEventListener("load", function(){
-    setTimeout(function(){
-      if(check()) create();
-    }, 300);
+    setTimeout(initApp, 500);
   });
 })();
 
@@ -474,4 +465,9 @@ button:disabled { opacity: .45; }
     try{ divider.releasePointerCapture(e.pointerId); }catch(_){}
   });
   divider.addEventListener("pointercancel", function(){
-    dragging = false; divider.classList
+    dragging = false; divider.classList.remove("dragging");
+  });
+})();
+</script>
+</body>
+</html>
