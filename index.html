@@ -299,19 +299,13 @@ button:disabled {
 
 @media(max-width:900px) {
 .grid {
-    grid-template-columns: minmax(200px, 2fr) 6px minmax(150px, 1fr);
-    height: 1200px;
-    min-height: 0;
-    max-height: 1200px
+    grid-template-columns: minmax(200px, 2fr) 6px minmax(150px, 1fr)
 }
 }
 
 @media(max-width:700px) {
 .grid {
-    grid-template-columns: minmax(160px, 2fr) 5px minmax(120px, 1fr);
-    height: 1200px;
-    min-height: 0;
-    max-height: 1200px
+    grid-template-columns: minmax(160px, 2fr) 5px minmax(120px, 1fr)
 }
 }
 /* 右側「ポジショニング手順」のカードだけを縦スクロール */
@@ -334,11 +328,23 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
 }
+}
+
+/* Main area height is controlled by orientation; width breakpoints only adjust columns. */
+@media (orientation: portrait) {
+.grid {
+    height: 1200px !important;
+    min-height: 0 !important;
+    max-height: 1200px !important
+}
+}
 @media (orientation: landscape) {
 .grid {
-    height: 760px;
-    min-height: 0;
-    max-height: 760px
+    height: 760px !important;
+    min-height: 0 !important;
+    max-height: 760px !important
+
+}
 }
 </style>
 </head>
@@ -366,7 +372,7 @@ button:disabled {
                 <select id="medicalGoal">
                   <option value="supine">仰臥位</option>
                   <option value="headelevation">頭側挙上</option>
-                  <option value="tilt30">30°側方傾斜位</option>
+                  <option value="tilt30">30°側臥位</option>
                   <option value="lateral90">半腹臥位</option>
                   <option value="other">その他</option>
                 </select>
