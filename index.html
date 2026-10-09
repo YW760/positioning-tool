@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ポジショニング姿勢可視化ツール</title>
 
-<!-- 信頼性の高いCDNからライブラリを一括読み込み -->
-<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js"></script>
-<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/drawing_utils.js"></script>
-<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
+<!-- 必要最小限のローカルライブラリ（camera_utils.js と pose.js）を読み込み -->
+<script src="./camera_utils.js"></script>
+<script src="./pose.js"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -362,13 +361,14 @@ button:disabled { opacity: .45; }
 
   function initApp(){
     if (typeof window.Pose === "undefined" || typeof window.Camera === "undefined") {
-      status("エラー: ライブラリの読み込みがブロックされています", "error");
+      status("エラー: 同一フォルダ内のライブラリファイル（pose.js / camera_utils.js）が不足しています", "error");
       return;
     }
     try {
+      var basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
       pose = new window.Pose({
         locateFile: function(file){
-          return "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/" + file;
+          return basePath + file;
         }
       });
       pose.setOptions({
@@ -432,7 +432,6 @@ button:disabled { opacity: .45; }
     setTimeout(resize, 300);
   });
 
-  // 読み込み完了後に初期化
   window.addEventListener("load", function(){
     setTimeout(initApp, 500);
   });
