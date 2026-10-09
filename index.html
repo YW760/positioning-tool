@@ -175,7 +175,7 @@ button:disabled { opacity: .45; }
   var video = document.getElementById("video"),
       canvas = document.getElementById("overlay"),
       ctx = canvas.getContext("2d"),
-      pose = null, camera = null, running = false, smooth = null, isReady = false;
+      pose = null, camera = null, running = false, smooth = null;
   var medicalGoal = document.getElementById("medicalGoal");
   var detailToggle = document.getElementById("detailToggle");
   var detailArea = document.getElementById("detailArea");
@@ -361,13 +361,13 @@ button:disabled { opacity: .45; }
 
   function check(){
     if(typeof window.Pose === "undefined" || typeof window.Camera === "undefined"){
-      status("エラー: pose.js または camera_utils.js が読み込まれていません", "error");
+      status("エラー: ライブラリが読み込まれていません", "error");
       return false;
     }
     return true;
   }
 
-  async function initPose(){
+  function create(){
     if(pose) return true;
     if(!check()) return false;
     try {
@@ -385,12 +385,6 @@ button:disabled { opacity: .45; }
         minTrackingConfidence: 0.5
       });
       pose.onResults(results);
-      
-      // モデルの初期化（WASMロード）を確実に完了させる
-      status("AIモデルを初期化しています…", "running");
-      await pose.initialize();
-      
-      isReady = true;
       status("カメラを開始できます。", "ok");
       document.getElementById("startBtn").disabled = false;
       return true;
@@ -401,16 +395,13 @@ button:disabled { opacity: .45; }
   }
 
   async function start(){
-    if(!isReady) {
-      var success = await initPose();
-      if(!success) return;
-    }
+    if(!create()) return;
     stop(false);
     status("カメラを起動しています…", "running");
     
     try {
       running = true; smooth = null;
-      // 内側カメラ（前面）を指定するため facingMode: "user" を設定
+      // 内側カメラ（前面カメラ）を指定
       camera = new window.Camera(video, {
         onFrame: async function(){
           if(running && pose) {
@@ -421,7 +412,7 @@ button:disabled { opacity: .45; }
         height: 720,
         facingMode: "user"
       });
-      await camera.start();
+      camera.start();
       status("リアルタイム骨格解析中", "running");
       document.getElementById("stopBtn").disabled = false;
     } catch(e){
@@ -451,7 +442,7 @@ button:disabled { opacity: .45; }
 
   window.addEventListener("load", function(){
     setTimeout(function(){
-      if(check()) initPose();
+      if(check()) create();
     }, 300);
   });
 })();
@@ -483,9 +474,4 @@ button:disabled { opacity: .45; }
     try{ divider.releasePointerCapture(e.pointerId); }catch(_){}
   });
   divider.addEventListener("pointercancel", function(){
-    dragging = false; divider.classList.remove("dragging");
-  });
-})();
-</script>
-</body>
-</html>
+    dragging = false; divider.classList
