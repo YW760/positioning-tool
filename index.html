@@ -4,246 +4,97 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ポジショニング姿勢可視化ツール</title>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+<!-- MediaPipe ライブラリ（バージョン明示指定） -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" crossorigin="anonymous"></script>
+
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* 画面全体のスクロールを防ぎ枠内に収める */
-    background: #f3f5f7;
-    color: #222;
-    font-family: "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
+    height: 100%; margin: 0; padding: 0; overflow: hidden;
+    background: #f3f5f7; color: #222; font-family: "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
 }
 .wrap {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 6px;
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh;
+    max-width: 100%; margin: 0 auto; padding: 6px;
 }
-.top-description {
-    font-size: 12px;
-    color: #555;
-    line-height: 1.35;
-    margin: 0 0 6px 0;
-    flex: none;
-}
-.top-note {
-    font-size: 11px;
-    color: #666;
-}
+.top-description { font-size: 12px; color: #555; line-height: 1.35; margin: 0 0 6px 0; flex: none; }
+.top-note { font-size: 11px; color: #666; }
 
-/* 常に左右2カラム配置 */
 .grid {
-    display: grid;
-    grid-template-columns: minmax(260px, 1.3fr) 6px minmax(220px, 1fr);
-    gap: 0;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
+    display: grid; grid-template-columns: minmax(260px, 1.3fr) 6px minmax(220px, 1fr);
+    gap: 0; flex: 1; min-height: 0; overflow: hidden;
 }
 
 .card {
-    background: #fff;
-    border: 1px solid #d9dee3;
-    border-radius: 10px;
-    padding: 6px;
-    box-shadow: 0 1px 3px #0001;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
+    background: #fff; border: 1px solid #d9dee3; border-radius: 10px; padding: 6px;
+    box-shadow: 0 1px 3px #0001; display: flex; flex-direction: column; height: 100%; min-height: 0;
 }
 
-/* 左側：カメラカラム */
-.camera-column {
-    min-width: 0;
-    min-height: 0;
-    height: 100%;
-}
-.camera-column > main {
-    height: 100%;
-    min-height: 0;
-}
+.camera-column { min-width: 0; min-height: 0; height: 100%; }
+.camera-column > main { height: 100%; min-height: 0; }
 
 .status {
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin-bottom: 6px;
-    background: #eef1f4;
-    border-left: 5px solid #777;
-    font-size: 12px;
-    flex: none;
+    padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; background: #eef1f4;
+    border-left: 5px solid #777; font-size: 12px; flex: none; word-break: break-all;
 }
 .ok { border-left-color: #16803c!important; background: #eef9f1!important; }
 .warn { border-left-color: #b77900!important; background: #fff8e6!important; }
 .error { border-left-color: #c62828!important; background: #fff0f0!important; }
 .running { border-left-color: #1565c0!important; background: #eef5ff!important; }
 
-/* カメラ表示ステージ：縦横問わずあまり領域いっぱいに拡大 */
 .stage {
-    position: relative;
-    width: 100%;
-    flex: 1; /* 余剰高さを全てカメラ領域に割り当て */
-    min-height: 0;
-    background: #111;
-    border-radius: 8px;
-    overflow: hidden;
+    position: relative; width: 100%; flex: 1; min-height: 0;
+    background: #111; border-radius: 8px; overflow: hidden;
 }
 
-/* 余白（黒帯）が出ないよう object-fit: cover で領域いっぱいにフィット */
 #video, #overlay {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
 
-/* 操作パネル：常にカメラ画像の下部にしっかり表示 */
-.controls {
-    display: flex;
-    gap: 6px;
-    margin-top: 6px;
-    flex-wrap: wrap;
-    align-items: center;
-    flex: none;
-}
+.controls { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; flex: none; }
 button {
-    font: inherit;
-    font-size: 12px;
-    padding: 7px 10px;
-    border-radius: 6px;
-    border: 1px solid #aeb6bf;
-    background: #fff;
-    cursor: pointer;
-    white-space: nowrap;
+    font: inherit; font-size: 12px; padding: 7px 10px; border-radius: 6px;
+    border: 1px solid #aeb6bf; background: #fff; cursor: pointer; white-space: nowrap;
 }
-button.primary {
-    background: #1565c0;
-    color: #fff;
-    border-color: #1565c0;
-}
+button.primary { background: #1565c0; color: #fff; border-color: #1565c0; }
 button:disabled { opacity: .45; }
 
-#targetPanel {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-.target-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-#medicalGoal {
-    font-size: 12px;
-    padding: 4px 6px;
-    border-radius: 6px;
-    border: 1px solid #aeb6bf;
-}
+#targetPanel { margin: 0; padding: 0; display: flex; align-items: center; }
+.target-row { display: flex; align-items: center; gap: 4px; }
+#medicalGoal { font-size: 12px; padding: 4px 6px; border-radius: 6px; border: 1px solid #aeb6bf; }
 
-/* 右側：手順・評価エリア */
-.procedure-column {
-    min-width: 0;
-    min-height: 0;
-    height: 100%;
-    overflow: hidden;
-}
-.procedure-column > aside {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-.guidance {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-.guidance-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-.guidance-intro {
-    font-size: 11px;
-    color: #555;
-    line-height: 1.4;
-    margin-bottom: 8px;
-}
+.procedure-column { min-width: 0; min-height: 0; height: 100%; overflow: hidden; }
+.procedure-column > aside { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.guidance { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.guidance-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.guidance-intro { font-size: 11px; color: #555; line-height: 1.4; margin-bottom: 8px; }
 .guidance-loading { padding: 6px 0; color: #666; font-size: 12px; }
 
-.metric {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    padding: 5px 0;
-    border-bottom: 1px solid #e5e8eb;
-    font-size: 12px;
-}
+.metric { display: grid; grid-template-columns: 1fr auto; padding: 5px 0; border-bottom: 1px solid #e5e8eb; font-size: 12px; }
 .value { font-weight: 700; }
-.level {
-    text-align: center;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 5px;
-    border-radius: 6px;
-    margin: 4px 0;
-}
+.level { text-align: center; font-size: 15px; font-weight: 700; padding: 5px; border-radius: 6px; margin: 4px 0; }
 .small { background: #eaf7ee; }
 .medium { background: #fff5d9; }
 .large { background: #ffe8e8; }
 
-.note, .caution {
-    font-size: 11px;
-    line-height: 1.35;
-    padding: 6px 8px;
-    border-radius: 6px;
-    margin-top: 6px;
-}
+.note, .caution { font-size: 11px; line-height: 1.35; padding: 6px 8px; border-radius: 6px; margin-top: 6px; }
 .note { background: #f7f8f9; color: #555; }
 .caution { border-left: 4px solid #b77900; background: #fff8e6; }
 
-.detail-toggle {
-    width: 100%;
-    margin-top: 6px;
-    flex: none;
-}
-.detail-area {
-    display: none;
-    overflow-y: auto;
-    max-height: 180px;
-}
+.detail-toggle { width: 100%; margin-top: 6px; flex: none; }
+.detail-area { display: none; overflow-y: auto; max-height: 180px; }
 
-/* 左右分割バー */
 .layout-divider {
-    width: 6px;
-    cursor: col-resize;
-    background: #d7dde2;
-    border-radius: 3px;
-    position: relative;
-    touch-action: none;
-    height: 100%;
+    width: 6px; cursor: col-resize; background: #d7dde2; border-radius: 3px;
+    position: relative; touch-action: none; height: 100%;
 }
 .layout-divider:hover, .layout-divider.dragging { background: #8fa0ad; }
 .layout-divider::after {
-    content: "⋮";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #65727c;
-    font-size: 14px;
+    content: "⋮"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #65727c; font-size: 14px;
 }
 </style>
 </head>
@@ -256,7 +107,6 @@ button:disabled { opacity: .45; }
   </p>
   
   <div class="grid">
-    <!-- 左側：カメラ映像領域 -->
     <div class="camera-column">
       <main>
         <div class="card">
@@ -285,10 +135,8 @@ button:disabled { opacity: .45; }
       </main>
     </div>
 
-    <!-- 左右のリサイズバー -->
     <div id="layoutDivider" class="layout-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="左右領域の幅を変更"></div>
 
-    <!-- 右側：手順と評価エリア -->
     <div class="procedure-column">
       <aside>
         <div class="card guidance">
@@ -329,7 +177,6 @@ button:disabled { opacity: .45; }
       canvas = document.getElementById("overlay"),
       ctx = canvas.getContext("2d"),
       pose = null, camera = null, running = false, smooth = null;
-  var lastMetrics = null, target = null;
   var medicalGoal = document.getElementById("medicalGoal");
   var detailToggle = document.getElementById("detailToggle");
   var detailArea = document.getElementById("detailArea");
@@ -390,7 +237,6 @@ button:disabled { opacity: .45; }
     ctx.setTransform(d, 0, 0, d, 0, 0);
   }
 
-  /* object-fit: cover に合わせた描画座標計算 */
   function vr(){
     var W = canvas.clientWidth, H = canvas.clientHeight,
         vw = video.videoWidth || 16, vh = video.videoHeight || 9,
@@ -443,4 +289,197 @@ button:disabled { opacity: .45; }
     ctx.translate(canvas.clientWidth, 0);
     ctx.scale(-1, 1);
     var r = vr(), p = {};
-    l.forEach(function(x, i){ p
+    l.forEach(function(x, i){ p[i] = mp(x, r); });
+
+    ctx.strokeStyle = "rgba(255,255,255,.8)";
+    ctx.fillStyle = "rgba(255,255,255,.9)";
+    [[11,23],[12,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28]].forEach(function(x){
+      if(p[x[0]] && p[x[1]]) line(p[x[0]], p[x[1]], 2);
+    });
+
+    if(!m) { ctx.restore(); return; }
+
+    var sc = mp(m.sc, r), pc = mp(m.pc, r), t = m.t, abs = Math.abs(t);
+    var col = abs < 6 ? "#2e8b57" : abs < 12 ? "#e0a000" : "#d33";
+    var wid = abs < 6 ? 4 : abs < 12 ? 7 : 11;
+    ctx.lineCap = "round";
+
+    ctx.strokeStyle = col;
+    line(p[11], p[12], wid);
+    line(p[23], p[24], wid);
+
+    ctx.setLineDash([10, 6]);
+    line(sc, pc, Math.max(3, wid - 1));
+    ctx.setLineDash([]);
+
+    var dx = sc.x - pc.x, dy = sc.y - pc.y, len = Math.hypot(dx, dy) || 1;
+    var dir = t >= 0 ? 1 : -1, nx = -dy / len * dir, ny = dx / len * dir;
+    var alen = Math.max(30, Math.min(75, len * 0.35));
+    var midX = pc.x + dx * 0.55, midY = pc.y + dy * 0.55;
+    var ax = midX + nx * alen, ay = midY + ny * alen;
+    var bx = midX - nx * alen * 0.25, by = midY - ny * alen * 0.25;
+    arrow(bx, by, ax, ay, col, Math.max(3, wid - 2));
+
+    var label = "ねじれ " + (t >= 0 ? "+" : "") + t.toFixed(1) + "°";
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.font = "bold 14px sans-serif";
+    var tx = canvas.clientWidth - sc.x + 14, ty = sc.y - 14, mw = ctx.measureText(label).width;
+    ctx.fillStyle = "rgba(255,255,255,.9)";
+    ctx.fillRect(tx - 5, ty - 16, mw + 10, 22);
+    ctx.fillStyle = col; ctx.fillText(label, tx, ty);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  function arrow(x1, y1, x2, y2, c, w){
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineCap = "round"; ctx.stroke();
+    var a = Math.atan2(y2 - y1, x2 - x1), s = 13 + w;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2); ctx.lineTo(x2 - s * Math.cos(a - 0.48), y2 - s * Math.sin(a - 0.48));
+    ctx.moveTo(x2, y2); ctx.lineTo(x2 - s * Math.cos(a + 0.48), y2 - s * Math.sin(a + 0.48));
+    ctx.strokeStyle = c; ctx.lineWidth = Math.max(2, w * 0.7); ctx.stroke();
+  }
+
+  function results(res){
+    if(!res.poseLandmarks){
+      document.getElementById("level").textContent = "人物を検出できません";
+      document.getElementById("level").className = "level medium";
+      setm("confidence", "--");
+      ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+      return;
+    }
+    var m = calc(res.poseLandmarks);
+    if(!m){
+      document.getElementById("level").textContent = "肩・骨盤を検出中";
+      document.getElementById("level").className = "level medium";
+      return;
+    }
+    draw(res.poseLandmarks, m);
+  }
+
+  function check(){
+    if(typeof window.Pose === "undefined"){
+      status("エラー: Poseライブラリ(pose.js)の読み込みに失敗しました", "error");
+      return false;
+    }
+    return true;
+  }
+
+  function create(){
+    if(pose) return true;
+    if(!check()) return false;
+    try {
+      // locateFileのURL指定を完全固定化
+      pose = new window.Pose({
+        locateFile: function(file){
+          return "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/" + file;
+        }
+      });
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+      pose.onResults(results);
+      status("カメラを開始できます。", "ok");
+      document.getElementById("startBtn").disabled = false;
+      return true;
+    } catch(e){
+      status("初期化エラー: " + e.message, "error");
+      return false;
+    }
+  }
+
+  async function start(){
+    if(!create()) return;
+    stop(false);
+    status("カメラを起動しています…", "running");
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      status("エラー: SSL(HTTPS)でないためカメラがブロックされています", "error");
+      return;
+    }
+    try {
+      var s = await navigator.mediaDevices.getUserMedia({
+        video: { width: {ideal: 1280}, height: {ideal: 720} },
+        audio: false
+      });
+      video.srcObject = s;
+      await video.play();
+      status("カメラ映像をリアルタイム解析しています…", "running");
+      running = true; smooth = null;
+      camera = new Camera(video, {
+        onFrame: async function(){ if(running) await pose.send({image: video}); },
+        width: 1280, height: 720
+      });
+      camera.start();
+      document.getElementById("stopBtn").disabled = false;
+    } catch(e){
+      status("カメラ起動失敗: " + e.name + " (" + e.message + ")", "error");
+    }
+  }
+
+  function stop(show){
+    running = false;
+    if(camera){ try{ camera.stop(); }catch(e){} camera = null; }
+    if(video.srcObject){
+      video.srcObject.getTracks().forEach(function(t){ t.stop(); });
+      video.srcObject = null;
+    }
+    document.getElementById("stopBtn").disabled = true;
+    if(show !== false) status("停止しました", "warn");
+  }
+
+  document.getElementById("startBtn").onclick = start;
+  document.getElementById("stopBtn").onclick = function(){ stop(true); };
+
+  window.addEventListener("resize", resize);
+  window.addEventListener("orientationchange", function(){
+    setTimeout(resize, 300);
+  });
+
+  // 初期化実行（エラー検知付き）
+  window.addEventListener("load", function(){
+    setTimeout(function(){
+      if(check()) create();
+    }, 500);
+  });
+})();
+
+/* 分割バー操作 */
+(function(){
+  var grid = document.querySelector(".grid");
+  var divider = document.getElementById("layoutDivider");
+  if(!grid || !divider) return;
+  var dragging = false;
+
+  function setWidth(clientX){
+    var rect = grid.getBoundingClientRect();
+    var x = clientX - rect.left;
+    var minLeft = Math.max(200, rect.width * 0.25);
+    var maxLeft = Math.min(rect.width - 180, rect.width * 0.85);
+    var left = Math.max(minLeft, Math.min(maxLeft, x));
+    var right = Math.max(150, rect.width - left - 6);
+    grid.style.gridTemplateColumns = left + "px 6px " + right + "px";
+  }
+
+  divider.addEventListener("pointerdown", function(e){
+    dragging = true; divider.classList.add("dragging");
+    divider.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  divider.addEventListener("pointermove", function(e){ if(dragging) setWidth(e.clientX); });
+  divider.addEventListener("pointerup", function(e){
+    dragging = false; divider.classList.remove("dragging");
+    try{ divider.releasePointerCapture(e.pointerId); }catch(_){}
+  });
+  divider.addEventListener("pointercancel", function(){
+    dragging = false; divider.classList.remove("dragging");
+  });
+})();
+</script>
+</body>
+</html>
