@@ -361,7 +361,7 @@ button:disabled { opacity: .45; }
 
   function check(){
     if(typeof window.Pose === "undefined"){
-      status("エラー: pose.js が見つかりません（同一フォルダに配置してください）", "error");
+      status("エラー: pose.js が読み込まれていません。ファイルの置き場所を確認してください。", "error");
       return false;
     }
     return true;
@@ -371,10 +371,11 @@ button:disabled { opacity: .45; }
     if(pose) return true;
     if(!check()) return false;
     try {
-      // 同一フォルダ内のWASM/モデルを参照
+      // 読み込みファイルの相対パスを確実化
+      var basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
       pose = new window.Pose({
         locateFile: function(file){
-          return "./" + file;
+          return basePath + file;
         }
       });
       pose.setOptions({
@@ -389,7 +390,7 @@ button:disabled { opacity: .45; }
       document.getElementById("startBtn").disabled = false;
       return true;
     } catch(e){
-      status("初期化エラー: " + e.message, "error");
+      status("Pose初期化エラー: " + e.message, "error");
       return false;
     }
   }
@@ -398,7 +399,9 @@ button:disabled { opacity: .45; }
     if(running && pose && video.readyState >= 2){
       try {
         await pose.send({image: video});
-      } catch(e){ console.error(e); }
+      } catch(e){
+        status("AI推論エラー: " + e.message, "error");
+      }
     }
     if(running){
       animId = requestAnimationFrame(processFrame);
@@ -408,7 +411,7 @@ button:disabled { opacity: .45; }
   async function start(){
     if(!create()) return;
     stop(false);
-    status("カメラを起動しています…", "running");
+    status("カメラを起動中・AIモデル準備中…", "running");
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
       status("エラー: カメラAPIにアクセスできません", "error");
       return;
@@ -420,7 +423,12 @@ button:disabled { opacity: .45; }
       });
       video.srcObject = s;
       await video.play();
-      status("カメラ映像をリアルタイム解析しています…", "running");
+      
+      // 最初の一コマを送信してWASMモデルのロードをテスト
+      status("AIモデルを読み込んでいます…", "running");
+      await pose.send({image: video});
+      
+      status("リアルタイム姿勢解析中", "running");
       running = true; smooth = null;
 
       if(typeof window.Camera !== "undefined"){
@@ -435,7 +443,7 @@ button:disabled { opacity: .45; }
 
       document.getElementById("stopBtn").disabled = false;
     } catch(e){
-      status("カメラ起動失敗: " + e.name + " (" + e.message + ")", "error");
+      status("起動失敗: " + (e.message || e.name), "error");
     }
   }
 
