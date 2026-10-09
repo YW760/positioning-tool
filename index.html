@@ -297,7 +297,7 @@ button:disabled {
     font-size: 18px
 }
 
-/* @media(max-width:900px) {
+@media(max-width:900px) {
 .grid {
     grid-template-columns: minmax(200px, 2fr) 6px minmax(150px, 1fr)
 }
@@ -307,7 +307,7 @@ button:disabled {
 .grid {
     grid-template-columns: minmax(160px, 2fr) 5px minmax(120px, 1fr)
 }
-} */
+}
 /* 右側「ポジショニング手順」のカードだけを縦スクロール */
 .procedure-column {
     min-width: 0;
@@ -316,14 +316,9 @@ button:disabled {
 .procedure-column > aside {
     height: 100%;
     min-height: 0;
-/*    overflow: hidden; */
-	overflow-y: auto
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    max-height: 1200px !important
-}
-.procedure-column > aside > * {
-    min-height: 0;
 }
 .procedure-column .guidance {
     flex: 1 1 auto;
@@ -332,9 +327,8 @@ button:disabled {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-
 }
-
+}
 
 /* Main area height is controlled by orientation; width breakpoints only adjust columns. */
 @media (orientation: portrait) {
@@ -351,11 +345,6 @@ button:disabled {
     max-height: 760px !important
 
 }
-}
-
-.card.guidance {
-  max-height: 1200px !important;
-  overflow-y: auto;
 }
 </style>
 </head>
