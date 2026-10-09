@@ -31,6 +31,7 @@ body {
     align-items: stretch;
     flex: 1;
     min-height: 0;
+    max-height: 1200px;
     overflow: hidden
 }
 .card {
@@ -357,7 +358,7 @@ button:disabled {
     overscroll-behavior: contain;
 }
 
-/* 縦向き・横向きごとの高さ上限制限（縦は最大1200px、横は最大760pxを超えない） */
+/* 縦向き・横向きごとの高さ上限制限（縦は最大1200px、横は最大760pxを超えないようにしつつ可変追従） */
 @media (orientation: portrait) {
 .grid {
     max-height: 1200px !important;
