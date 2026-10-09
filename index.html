@@ -25,9 +25,9 @@ body {
     grid-template-columns: minmax(240px, 2fr) 6px minmax(180px, 1fr);
     gap: 0;
     align-items: stretch;
-    height: 760px;
+    height: 1200px;
     min-height: 0;
-    max-height: 760px;
+    max-height: 1200px;
     overflow: hidden
 }
 .card {
@@ -300,18 +300,18 @@ button:disabled {
 @media(max-width:900px) {
 .grid {
     grid-template-columns: minmax(200px, 2fr) 6px minmax(150px, 1fr);
-    height: 700px;
+    height: 1200px;
     min-height: 0;
-    max-height: 700px
+    max-height: 1200px
 }
 }
 
 @media(max-width:700px) {
 .grid {
     grid-template-columns: minmax(160px, 2fr) 5px minmax(120px, 1fr);
-    height: 600px;
+    height: 1200px;
     min-height: 0;
-    max-height: 600px
+    max-height: 1200px
 }
 }
 /* 右側「ポジショニング手順」のカードだけを縦スクロール */
@@ -333,6 +333,12 @@ button:disabled {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+}
+@media (orientation: landscape) {
+.grid {
+    height: 760px;
+    min-height: 0;
+    max-height: 760px
 }
 </style>
 </head>
@@ -359,8 +365,9 @@ button:disabled {
               <label for="medicalGoal">目標姿勢：
                 <select id="medicalGoal">
                   <option value="supine">仰臥位</option>
+                  <option value="headelevation">頭側挙上</option>
                   <option value="tilt30">30°側方傾斜位</option>
-                  <option value="lateral90">90°側臥位</option>
+                  <option value="lateral90">半腹臥位</option>
                   <option value="other">その他</option>
                 </select>
               </label>
@@ -394,10 +401,9 @@ button:disabled {
           <div class="metric"><span>検出信頼度</span><span id="confidence" class="value">--</span></div>
           <div class="note"><b>重要：</b>小・中・大は動作確認用の仮分類です。医学的な正常／異常、褥瘡リスク、安全／危険を判定するものではありません。</div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   </div>
-</div>
 </div>
 <script>
 (function(){"use strict";var video=document.getElementById("video"),canvas=document.getElementById("overlay"),ctx=canvas.getContext("2d"),pose=null,camera=null,running=false,smooth=null;
@@ -416,6 +422,7 @@ detailToggle.onclick=function(){
 async function loadGuidance(goal){
   var map={
     supine:"guidance/supine.html",
+    headelevation:"guidance/headelevation.html",
     tilt30:"guidance/tilt30.html",
     lateral90:"guidance/lateral90.html",
     other:"guidance/other.html"
