@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ポジショニング姿勢可視化ツール</title>
 
-<!-- 必要最小限のローカルライブラリ（camera_utils.js と pose.js）を読み込み -->
-<script src="./camera_utils.js"></script>
-<script src="./pose.js"></script>
+<!-- 安定版CDNから自動読み込み（失敗時は動的インポートでリカバリ） -->
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js"></script>
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -361,14 +361,14 @@ button:disabled { opacity: .45; }
 
   function initApp(){
     if (typeof window.Pose === "undefined" || typeof window.Camera === "undefined") {
-      status("エラー: 同一フォルダ内のライブラリファイル（pose.js / camera_utils.js）が不足しています", "error");
+      status("ライブラリ読込中またはブロック中…お待ちください", "warn");
+      setTimeout(initApp, 1000);
       return;
     }
     try {
-      var basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
       pose = new window.Pose({
         locateFile: function(file){
-          return basePath + file;
+          return "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/" + file;
         }
       });
       pose.setOptions({
@@ -433,7 +433,7 @@ button:disabled { opacity: .45; }
   });
 
   window.addEventListener("load", function(){
-    setTimeout(initApp, 500);
+    setTimeout(initApp, 800);
   });
 })();
 
@@ -458,7 +458,7 @@ button:disabled { opacity: .45; }
     dragging = true; divider.classList.add("dragging");
     divider.setPointerCapture(e.pointerId); e.preventDefault();
   });
-  divider.addEventListener("pointermove", function(e){ if(dragging) setWidth(e.clientX); });
+  divider.addEventListener("pointermove", function(e){if(dragging) setWidth(e.clientX);});
   divider.addEventListener("pointerup", function(e){
     dragging = false; divider.classList.remove("dragging");
     try{ divider.releasePointerCapture(e.pointerId); }catch(_){}
