@@ -316,10 +316,14 @@ button:disabled {
 .procedure-column > aside {
     height: 100%;
     min-height: 0;
-    overflow: hidden;
+/*    overflow: hidden; */
+	overflow-y: auto
     display: flex;
     flex-direction: column;
     max-height: 1200px !important
+}
+.procedure-column > aside > * {
+    min-height: 0;
 }
 .procedure-column .guidance {
     flex: 1 1 auto;
