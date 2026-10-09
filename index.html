@@ -14,22 +14,18 @@ body {
     padding: 5px;
     background: #f3f5f7;
     color: #222;
-    font-family: "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
-    overflow: hidden;
+    font-family: "Segoe UI", "Yu Gothic", Meiryo, sans-serif
 }
 .wrap {
     max-width: 1400px;
-    margin: auto;
-    height: calc(100vh - 10px);
-    display: flex;
-    flex-direction: column;
+    margin: auto
 }
 .grid {
     display: grid;
     grid-template-columns: minmax(240px, 2fr) 6px minmax(180px, 1fr);
     gap: 0;
     align-items: stretch;
-    flex: 1;
+    height: 1200px;
     min-height: 0;
     max-height: 1200px;
     overflow: hidden
@@ -39,17 +35,12 @@ body {
     border: 1px solid #d9dee3;
     border-radius: 12px;
     padding: 6px;
-    box-shadow: 0 1px 3px #0001;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
+    box-shadow: 0 1px 3px #0001
 }
 .stage {
     position: relative;
     width: 100%;
-    flex: 1 1 0;
-    min-height: 0;
+    aspect-ratio: 4/5;
     background: #111;
     border-radius: 8px;
     overflow: hidden
@@ -64,10 +55,9 @@ body {
 .status {
     padding: 10px 12px;
     border-radius: 8px;
-    margin: 0 0 8px 0;
+    margin: 8px 0;
     background: #eef1f4;
-    border-left: 5px solid #777;
-    flex: none;
+    border-left: 5px solid #777
 }
 .ok {
     border-left-color: #16803c!important;
@@ -88,9 +78,8 @@ body {
 .controls {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-    flex: none;
+    margin: 12px 0;
+    flex-wrap: wrap
 }
 button {
     font: inherit;
@@ -186,8 +175,7 @@ button:disabled {
     font-size: 13px;
     color: #555;
     line-height: 1.5;
-    margin: 4px 0 12px;
-    flex: none;
+    margin: 4px 0 12px
 }
 .top-note {
     font-size: 12px;
@@ -264,32 +252,25 @@ button:disabled {
     border-radius: 6px;
     margin-top: 12px;
     font-size: 12px;
-    line-height: 1.55;
-    flex: none;
+    line-height: 1.55
 }
 .detail-toggle {
     width: 100%;
-    margin-top: 6px;
-    flex: none;
+    margin-top: 6px
 }
 .detail-area {
-    display: none;
-    flex: none;
+    display: none
 }
 .camera-column, .procedure-column {
     min-width: 0;
     min-height: 0;
     height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    overflow: hidden
 }
 .camera-column>main {
     height: 100%;
     min-height: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    overflow: hidden
 }
 .procedure-column {
     overflow: hidden
@@ -347,22 +328,28 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
 }
+}
 
-/* 縦向き・横向きごとの最大高さ制限（縦は1200px、横は760px「以上にしない」設定） */
+/* Main area height is controlled by orientation; width breakpoints only adjust columns. */
 @media (orientation: portrait) {
 .grid {
-    max-height: 1200px !important;
+    height: 1200px !important;
+    min-height: 0 !important;
+    max-height: 1200px !important
 }
 }
 @media (orientation: landscape) {
 .grid {
-    max-height: 760px !important;
+    height: 760px !important;
+    min-height: 0 !important;
+    max-height: 760px !important
+
 }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap"
 
 <p class="top-description"> <b>ねじれの視覚表示：</b> <span style="color:#2e8b57;font-weight:700">緑＝小</span> ／ <span style="color:#b77900;font-weight:700">黄＝中</span> ／ <span style="color:#c62828;font-weight:700">赤＝大</span>。
   肩・骨盤ラインと体幹軸の色と太さが変化し、矢印で方向を示します。 <span class="top-note">医学的な危険度判定ではありません。</span> <br>
@@ -420,10 +407,9 @@ button:disabled {
           <div class="metric"><span>検出信頼度</span><span id="confidence" class="value">--</span></div>
           <div class="note"><b>重要：</b>小・中・大は動作確認用の仮分類です。医学的な正常／異常、褥瘡リスク、安全／危険を判定するものではありません。</div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   </div>
-</div>
 </div>
 <script>
 (function(){"use strict";var video=document.getElementById("video"),canvas=document.getElementById("overlay"),ctx=canvas.getContext("2d"),pose=null,camera=null,running=false,smooth=null;
@@ -465,6 +451,7 @@ medicalGoal.onchange=function(){
 };
 loadGuidance(medicalGoal.value);
 
+
 function log(s){}function status(s,c){var e=document.getElementById("mainStatus");if(e){e.textContent=s;e.className="status "+(c||"")}}function step(n,s,c){}function setm(id,v){document.getElementById(id).textContent=v}function deg(x){return x*180/Math.PI}function la(a,b){var x=deg(Math.atan2(b.y-a.y,b.x-a.x));while(x>90)x-=180;while(x<-90)x+=180;return x}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
 function classify(t,o){var v=Math.max(Math.abs(t),Math.abs(o)*.8);return v<6?["小","small"]:v<12?["中","medium"]:["大","large"]}function resize(){var d=window.devicePixelRatio||1;canvas.width=Math.round(canvas.clientWidth*d);canvas.height=Math.round(canvas.clientHeight*d);ctx.setTransform(d,0,0,d,0,0)}function vr(){var W=canvas.clientWidth,H=canvas.clientHeight,vw=video.videoWidth||16,vh=video.videoHeight||9,va=vw/vh,ca=W/H,w,h,x,y;if(va>ca){w=W;h=W/va;x=0;y=(H-h)/2}else{h=H;w=H*va;y=0;x=(W-w)/2}return{x:x,y:y,w:w,h:h}}function mp(p,r){return{x:r.x+p.x*r.w,y:r.y+p.y*r.h}}function line(a,b,w){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineWidth=w||3;ctx.stroke()}function calc(l){
 var a=l[11],b=l[12],c=l[23],d=l[24];
@@ -500,9 +487,11 @@ function setTarget(m){
     pc:{x:m.pc.x,y:m.pc.y},
     medicalGoal:goal
   };
+  
 }
 function clearTarget(){
   target=null;
+  
 }
 function targetDiff(m){
   if(!target)return null;
@@ -516,6 +505,7 @@ function draw(l,m){
 resize();
 ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
 if(!l)return;
+/* カメラ映像と同じ左右反転で姿勢線・ねじれ表示を描画 */
 ctx.save();
 ctx.translate(canvas.clientWidth,0);
 ctx.scale(-1,1);
@@ -527,19 +517,23 @@ if(p[x[0]]&&p[x[1]])line(p[x[0]],p[x[1]],2)
 if(!m)return;
 lastMetrics=m;
 
+
 var sc=mp(m.sc,r),pc=mp(m.pc,r),t=m.t,abs=Math.abs(t);
 var col=abs<6?"#2e8b57":abs<12?"#e0a000":"#d33";
 var wid=abs<6?4:abs<12?7:11;
 ctx.lineCap="round";
 
+/* 肩・骨盤ライン */
 ctx.strokeStyle=col;
 line(p[11],p[12],wid);
 line(p[23],p[24],wid);
 
+/* 体幹中心軸 */
 ctx.setLineDash([10,6]);
 line(sc,pc,Math.max(3,wid-1));
 ctx.setLineDash([]);
 
+/* ねじれ方向矢印 */
 var dx=sc.x-pc.x,dy=sc.y-pc.y,len=Math.hypot(dx,dy)||1;
 var dir=t>=0?1:-1,nx=-dy/len*dir,ny=dx/len*dir;
 var alen=Math.max(30,Math.min(75,len*.35));
@@ -547,8 +541,9 @@ var midX=pc.x+dx*.55,midY=pc.y+dy*.55;
 var ax=midX+nx*alen,ay=midY+ny*alen;
 var bx=midX-nx*alen*.25,by=midY-ny*alen*.25;
 arrow(bx,by,ax,ay,col,Math.max(3,wid-2));
-
+/* 数値ラベル */
 var label="ねじれ "+(t>=0?"+":"")+t.toFixed(1)+"°";
+/* ラベルは読みやすさのため文字だけ通常向きに戻す */
 ctx.save();
 ctx.setTransform(1,0,0,1,0,0);
 ctx.font="bold 14px sans-serif";
@@ -557,7 +552,6 @@ ctx.fillStyle="rgba(255,255,255,.9)";
 ctx.fillRect(tx-5,ty-16,mw+10,22);
 ctx.fillStyle=col;ctx.fillText(label,tx,ty);
 ctx.restore();
-
 if(target){
   var d=targetDiff(m);
   var dlabel="目標との差  ねじれ "+(d.twist>=0?"+":"")+d.twist.toFixed(1)+"° / 左右 "+(d.offset>=0?"+":"")+d.offset.toFixed(1)+"%";
@@ -572,6 +566,8 @@ if(target){
   ctx.fillText(dlabel,ntx,ty+23);
   ctx.restore();
 }
+
+
 
 ctx.restore();
 }
@@ -601,4 +597,49 @@ document.getElementById("level").className="level medium";
 return;
 }
 step(4,"検出中・評価中","running");
-draw(res.poseLand
+draw(res.poseLandmarks,m);
+}
+function check(){if(typeof Pose==="undefined"){step(1,"失敗","error");status("MediaPipeライブラリが読み込まれていません","error");log("ERROR: Pose が未定義です。CDNアクセスを確認してください。");return false}step(1,"OK","ok");log("MediaPipe Pose ライブラリ読み込み成功");return true}
+function create(){if(pose)return true;if(!check())return false;try{pose=new Pose({locateFile:function(f){return"https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+f}});pose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(results);step(2,"OK","ok");status("カメラを開始できます。","ok");document.getElementById("startBtn").disabled=false;log("Poseオブジェクト作成成功");return true}catch(e){step(2,"失敗","error");status("初期化に失敗しました","error");log("Pose ERROR: "+e.message);return false}}
+async function start(){if(!create())return;stop(false);status("カメラを起動しています…","running");step(3,"起動中","running");if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){step(3,"非対応","error");status("このブラウザーではカメラAPIを利用できません","error");log("getUserMedia が利用できません");return}try{var s=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:false});video.srcObject=s;await video.play();step(3,"OK","ok");status("カメラ映像をリアルタイム解析しています…","running");running=true;smooth=null;step(4,"検出待ち","running");log("姿勢推定を開始しました。肩(11/12)・骨盤(23/24)の4点を待機中");log("カメラ開始: "+video.videoWidth+"x"+video.videoHeight);camera=new Camera(video,{onFrame:async function(){if(running)await pose.send({image:video})},width:1280,height:720});camera.start();document.getElementById("stopBtn").disabled=false}catch(e){step(3,"失敗","error");status("カメラを起動できませんでした","error");log("Camera ERROR: "+e.name+" / "+e.message);if(e.name==="NotAllowedError")log("カメラ使用許可を確認してください")}}
+function stop(show){running=false;if(camera){try{camera.stop()}catch(e){}camera=null}if(video.srcObject){video.srcObject.getTracks().forEach(function(t){t.stop()});video.srcObject=null}document.getElementById("stopBtn").disabled=true;if(show!==false){status("停止しました","warn");step(4,"停止","");log("カメラ停止")}}
+document.getElementById("startBtn").onclick=start;document.getElementById("stopBtn").onclick=function(){stop(true)};window.onresize=resize;log("HTML起動 / classic script版 / file://対応");if(check())create();})();
+
+(function(){
+  var grid=document.querySelector(".grid");
+  var divider=document.getElementById("layoutDivider");
+  if(!grid || !divider) return;
+  var dragging=false;
+  function setWidth(clientX){
+    var rect=grid.getBoundingClientRect();
+    var x=clientX-rect.left;
+    var minLeft=Math.max(240,rect.width*0.35);
+    var maxLeft=Math.min(rect.width-180,rect.width*0.85);
+    var left=Math.max(minLeft,Math.min(maxLeft,x));
+    var right=Math.max(180,rect.width-left-6);
+    grid.style.gridTemplateColumns=left+"px 6px "+right+"px";
+  }
+  divider.addEventListener("pointerdown",function(e){
+    dragging=true; divider.classList.add("dragging");
+    divider.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  divider.addEventListener("pointermove",function(e){if(dragging)setWidth(e.clientX);});
+  divider.addEventListener("pointerup",function(e){
+    dragging=false; divider.classList.remove("dragging");
+    try{divider.releasePointerCapture(e.pointerId);}catch(_){}
+  });
+  divider.addEventListener("pointercancel",function(){
+    dragging=false; divider.classList.remove("dragging");
+  });
+  divider.addEventListener("keydown",function(e){
+    if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+    var rect=grid.getBoundingClientRect();
+    var current=grid.children[0].getBoundingClientRect().width;
+    setWidth(rect.left+current+(e.key==="ArrowLeft"?-20:20));
+    e.preventDefault();
+  });
+})();
+
+</script>
+</body>
+</html>
