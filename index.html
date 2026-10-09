@@ -328,23 +328,122 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
 }
-}
 
-/* Main area height is controlled by orientation; width breakpoints only adjust columns. */
+/* Galaxy Tab A11+ などのタブレット向け：ページ全体は固定し、右側だけをスクロール */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+body {
+    height: 100vh;
+    height: 100dvh;
+    padding: 5px;
+}
+.wrap {
+    width: 100%;
+    height: 100%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.top-description {
+    flex: 0 0 auto;
+    margin: 2px 0 6px;
+    line-height: 1.35;
+}
+.grid {
+    flex: 1 1 auto;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden;
+}
+.camera-column,
+.camera-column > main {
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+.camera-column > main > .card {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.camera-column .status {
+    flex: 0 0 auto;
+    margin: 4px 0;
+    padding: 6px 8px;
+}
+.camera-column .stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 0;
+    aspect-ratio: auto;
+}
+.camera-column .controls {
+    flex: 0 0 auto;
+    margin: 6px 0 0;
+    gap: 6px;
+}
+.camera-column button {
+    padding: 6px 9px;
+}
+.procedure-column,
+.procedure-column > aside {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+.procedure-column > aside {
+    display: flex;
+    flex-direction: column;
+}
+.procedure-column .guidance {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+.guidance-title {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+.guidance-intro {
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+.guidance .caution {
+    padding: 7px 8px;
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.4;
+}
+/* 手順HTMLは li ではなく p 要素を使うため、実際のクラスに適用 */
+.guidance-content p {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+.guidance-content img {
+    max-width: 100%;
+    height: auto;
+}
+@media (max-height: 700px) {
+    .top-description { font-size: 11px; line-height: 1.25; margin-bottom: 4px; }
+    .guidance-title { font-size: 16px; }
+    .card { padding: 4px; }
+}
 @media (orientation: portrait) {
-.grid {
-    height: 1200px !important;
-    min-height: 0 !important;
-    max-height: 1200px !important
-}
-}
-@media (orientation: landscape) {
-.grid {
-    height: 760px !important;
-    min-height: 0 !important;
-    max-height: 760px !important
-
-}
+    .grid {
+        grid-template-columns: minmax(0, 2fr) 5px minmax(0, 1.25fr);
+    }
 }
 </style>
 </head>
@@ -407,7 +506,8 @@ button:disabled {
           <div class="metric"><span>検出信頼度</span><span id="confidence" class="value">--</span></div>
           <div class="note"><b>重要：</b>小・中・大は動作確認用の仮分類です。医学的な正常／異常、褥瘡リスク、安全／危険を判定するものではありません。</div>
         </div>
-      </aside>
+      </div>
+    </aside>
     </div>
   </div>
 </div>
