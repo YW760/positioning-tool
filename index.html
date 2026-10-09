@@ -1,113 +1,405 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ポジショニング姿勢可視化ツール</title>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ポジショニング姿勢可視化ツール</title>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;padding:20px;background:#f3f5f7;color:#222;font-family:"Segoe UI","Yu Gothic",Meiryo,sans-serif}.wrap{max-width:1400px;margin:auto}.grid{display:grid;grid-template-columns:minmax(240px,2fr) 6px minmax(180px,1fr);gap:0;align-items:stretch;height:760px;min-height:0;max-height:760px;overflow:hidden}.card{background:#fff;border:1px solid #d9dee3;border-radius:12px;padding:16px;box-shadow:0 1px 3px #0001}.stage{position:relative;width:100%;aspect-ratio:4/5;background:#111;border-radius:8px;overflow:hidden}#video,#overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.status{padding:10px 12px;border-radius:8px;margin:8px 0;background:#eef1f4;border-left:5px solid #777}.ok{border-left-color:#16803c!important;background:#eef9f1!important}.warn{border-left-color:#b77900!important;background:#fff8e6!important}.error{border-left-color:#c62828!important;background:#fff0f0!important}.running{border-left-color:#1565c0!important;background:#eef5ff!important}.controls{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}button{font:inherit;padding:9px 12px;border-radius:7px;border:1px solid #aeb6bf;background:#fff;cursor:pointer}button.primary{background:#1565c0;color:#fff}button:disabled{opacity:.45}.metric{display:grid;grid-template-columns:1fr auto;padding:10px 0;border-bottom:1px solid #e5e8eb}.value{font-weight:700}.level{text-align:center;font-size:20px;font-weight:700;padding:12px;border-radius:8px;margin:12px 0}.small{background:#eaf7ee}.medium{background:#fff5d9}.large{background:#ffe8e8}.note,.help{font-size:12px;line-height:1.55;color:#555;background:#f7f8f9;padding:10px;border-radius:7px;margin-top:12px}.help{font-size:13px;background:#fff8e6}.log{height:170px;overflow:auto;background:#111;color:#d8f3dc;padding:9px;border-radius:7px;font:12px/1.45 Consolas,monospace;white-space:pre-wrap}.step{display:flex;gap:8px;align-items:center;margin:6px 0}.dot{width:12px;height:12px;border-radius:50%;background:#bbb;flex:none}.dot.ok{background:#16803c}.dot.error{background:#c62828}.dot.running{background:#1565c0}.sub{font-size:12px;color:#666}.top-description{font-size:13px;color:#555;line-height:1.5;margin:4px 0 12px}
-.top-note{font-size:12px;color:#666}
-#targetPanel{
-  margin:0!important;
-  padding:0 0 0 10px!important;
-  border:0!important;
-  background:transparent!important;
-  display:flex;
-  align-items:center;
-  flex:none;
+<style>
+* {
+    box-sizing: border-box
 }
-.target-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
-.target-step{font-weight:700;font-size:14px;white-space:nowrap}
-#medicalGoal{font-size:15px!important;padding:4px 7px!important}
-.target-actions,.target-status{display:none!important}
-.guidance h2{margin:0 0 8px;font-size:19px}
-.guidance-title{font-size:22px;font-weight:700;margin-bottom:8px}
-.guidance-intro{font-size:13px;color:#555;line-height:1.55;margin-bottom:14px}.guidance-loading{padding:10px 0;color:#666;font-size:13px}
-.guidance ol{margin:8px 0 0 22px;padding:0}
-.guidance li{margin:9px 0;line-height:1.55}
-.guidance .point{padding:10px 12px;border-radius:8px;background:#f7f8f9;margin-top:12px;font-size:13px;line-height:1.55}
-.guidance .caution{padding:10px 12px;border-left:4px solid #b77900;background:#fff8e6;border-radius:6px;margin-top:12px;font-size:12px;line-height:1.55}
-.detail-toggle{width:100%;margin-top:12px}
-.detail-area{display:none}
+body {
+    margin: 0;
+    padding: 5px;
+    background: #f3f5f7;
+    color: #222;
+    font-family: "Segoe UI", "Yu Gothic", Meiryo, sans-serif
+}
+.wrap {
+    max-width: 1400px;
+    margin: auto
+}
+.grid {
+    display: grid;
+    grid-template-columns: minmax(240px, 2fr) 6px minmax(180px, 1fr);
+    gap: 0;
+    align-items: stretch;
+    height: 760px;
+    min-height: 0;
+    max-height: 760px;
+    overflow: hidden
+}
+.card {
+    background: #fff;
+    border: 1px solid #d9dee3;
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 1px 3px #0001
+}
+.stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: #111;
+    border-radius: 8px;
+    overflow: hidden
+}
+#video, #overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain
+}
+.status {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+    background: #eef1f4;
+    border-left: 5px solid #777
+}
+.ok {
+    border-left-color: #16803c!important;
+    background: #eef9f1!important
+}
+.warn {
+    border-left-color: #b77900!important;
+    background: #fff8e6!important
+}
+.error {
+    border-left-color: #c62828!important;
+    background: #fff0f0!important
+}
+.running {
+    border-left-color: #1565c0!important;
+    background: #eef5ff!important
+}
+.controls {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0;
+    flex-wrap: wrap
+}
+button {
+    font: inherit;
+    padding: 9px 12px;
+    border-radius: 7px;
+    border: 1px solid #aeb6bf;
+    background: #fff;
+    cursor: pointer
+}
+button.primary {
+    background: #1565c0;
+    color: #fff
+}
+button:disabled {
+    opacity: .45
+}
+.metric {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e8eb
+}
+.value {
+    font-weight: 700
+}
+.level {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 6px;
+    border-radius: 8px;
+    margin: 6px 0
+}
+.small {
+    background: #eaf7ee
+}
+.medium {
+    background: #fff5d9
+}
+.large {
+    background: #ffe8e8
+}
+.note, .help {
+    font-size: 12px;
+    line-height: 1.55;
+    color: #555;
+    background: #f7f8f9;
+    padding: 10px;
+    border-radius: 7px;
+    margin-top: 12px
+}
+.help {
+    font-size: 13px;
+    background: #fff8e6
+}
+.log {
+    height: 170px;
+    overflow: auto;
+    background: #111;
+    color: #d8f3dc;
+    padding: 9px;
+    border-radius: 7px;
+    font: 12px/1.45 Consolas, monospace;
+    white-space: pre-wrap
+}
+.step {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 6px 0
+}
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #bbb;
+    flex: none
+}
+.dot.ok {
+    background: #16803c
+}
+.dot.error {
+    background: #c62828
+}
+.dot.running {
+    background: #1565c0
+}
+.sub {
+    font-size: 12px;
+    color: #666
+}
+.top-description {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+    margin: 4px 0 12px
+}
+.top-note {
+    font-size: 12px;
+    color: #666
+}
+#targetPanel {
+    margin: 0!important;
+    padding: 0 0 0 10px!important;
+    border: 0!important;
+    background: transparent!important;
+    display: flex;
+    align-items: center;
+    flex: none;
+}
+.target-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0
+}
+.target-step {
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap
+}
+#medicalGoal {
+    font-size: 15px!important;
+    padding: 4px 7px!important
+}
+.target-actions, .target-status {
+    display: none!important
+}
+.guidance h2 {
+    margin: 0 0 8px;
+    font-size: 19px
+}
+.guidance-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px
+}
+.guidance-intro {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.55;
+    margin-bottom: 14px
+}
+.guidance-loading {
+    padding: 10px 0;
+    color: #666;
+    font-size: 13px
+}
+.guidance ol {
+    margin: 8px 0 0 22px;
+    padding: 0
+}
+.guidance li {
+    margin: 9px 0;
+    line-height: 1.55
+}
+.guidance .point {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f7f8f9;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.55
+}
+.guidance .caution {
+    padding: 10px 12px;
+    border-left: 4px solid #b77900;
+    background: #fff8e6;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.55
+}
+.detail-toggle {
+    width: 100%;
+    margin-top: 6px
+}
+.detail-area {
+    display: none
+}
+.camera-column, .procedure-column {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden
+}
+.camera-column>main {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden
+}
+.procedure-column {
+    overflow: hidden
+}
+.layout-divider {
+    width: 6px;
+    cursor: col-resize;
+    background: #d7dde2;
+    border-radius: 3px;
+    position: relative;
+    touch-action: none;
+    min-height: 100%
+}
+.layout-divider:hover, .layout-divider.dragging {
+    background: #8fa0ad
+}
+.layout-divider::after {
+    content: "⋮";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #65727c;
+    font-size: 18px
+}
 
-.camera-column,.procedure-column{min-width:0;min-height:0;height:100%;overflow:hidden}
-.camera-column>main{height:100%;min-height:0;overflow:hidden}
-.procedure-column{overflow:hidden}
-.layout-divider{width:6px;cursor:col-resize;background:#d7dde2;border-radius:3px;position:relative;touch-action:none;min-height:100%}
-.layout-divider:hover,.layout-divider.dragging{background:#8fa0ad}
-.layout-divider::after{content:"⋮";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#65727c;font-size:18px}
-@media(max-width:900px){.grid{grid-template-columns:minmax(200px,2fr) 6px minmax(150px,1fr);height:700px;min-height:0;max-height:700px}}
-@media(max-width:700px){.grid{grid-template-columns:minmax(160px,2fr) 5px minmax(120px,1fr);height:600px;min-height:0;max-height:600px}}
+@media(max-width:900px) {
+.grid {
+    grid-template-columns: minmax(200px, 2fr) 6px minmax(150px, 1fr);
+    height: 700px;
+    min-height: 0;
+    max-height: 700px
+}
+}
 
+@media(max-width:700px) {
+.grid {
+    grid-template-columns: minmax(160px, 2fr) 5px minmax(120px, 1fr);
+    height: 600px;
+    min-height: 0;
+    max-height: 600px
+}
+}
 /* 右側「ポジショニング手順」のカードだけを縦スクロール */
-.procedure-column{
-  min-width:0;
-  overflow:hidden;
+.procedure-column {
+    min-width: 0;
+    overflow: hidden;
 }
-.procedure-column > aside{
-  height:100%;
-  min-height:0;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
+.procedure-column > aside {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
-.procedure-column .guidance{
-  flex:1 1 auto;
-  min-height:0;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
+.procedure-column .guidance {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
-</style></head>
-<body><div class="wrap"
-<p class="top-description">
-<b>ねじれの視覚表示：</b>
-<span style="color:#2e8b57;font-weight:700">緑＝小</span> ／
-<span style="color:#b77900;font-weight:700">黄＝中</span> ／
-<span style="color:#c62828;font-weight:700">赤＝大</span>。
-肩・骨盤ラインと体幹軸の色と太さが変化し、矢印で方向を示します。
-<span class="top-note">医学的な危険度判定ではありません。</span>
-<br><b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p><div class="grid"><div class="camera-column"><main><div class="card"><div id="mainStatus" class="status">MediaPipeを確認しています…</div><div class="stage"><video id="video" autoplay muted playsinline style="transform:scaleX(-1);-webkit-transform:scaleX(-1);"></video><canvas id="overlay"></canvas></div>
+</style>
+</head>
+<body>
+<div class="wrap"
 
-<div class="controls">
-<button id="startBtn" class="primary" disabled>カメラ開始</button>
-<button id="stopBtn" disabled>停止</button>
-<div id="targetPanel">
-  <div class="target-row">
-    <label for="medicalGoal">目標姿勢：
-      <select id="medicalGoal">
-        <option value="supine">仰臥位</option>
-        <option value="tilt30">30°側方傾斜位</option>
-        <option value="lateral90">90°側臥位</option>
-        <option value="other">その他</option>
-      </select>
-    </label>
+<p class="top-description"> <b>ねじれの視覚表示：</b> <span style="color:#2e8b57;font-weight:700">緑＝小</span> ／ <span style="color:#b77900;font-weight:700">黄＝中</span> ／ <span style="color:#c62828;font-weight:700">赤＝大</span>。
+  肩・骨盤ラインと体幹軸の色と太さが変化し、矢印で方向を示します。 <span class="top-note">医学的な危険度判定ではありません。</span> <br>
+  <b>撮影：</b>できるだけ身体を上方から撮影し、頭・肩・骨盤・脚を画面に入れてください。</p>
+<div class="grid">
+  <div class="camera-column">
+    <main>
+      <div class="card">
+        <div id="mainStatus" class="status">MediaPipeを確認しています…</div>
+        <div class="stage">
+          <video id="video" autoplay muted playsinline style="transform:scaleX(-1);-webkit-transform:scaleX(-1);"></video>
+          <canvas id="overlay"></canvas>
+        </div>
+        <div class="controls">
+          <button id="startBtn" class="primary" disabled>カメラ開始</button>
+          <button id="stopBtn" disabled>停止</button>
+          <div id="targetPanel">
+            <div class="target-row">
+              <label for="medicalGoal">目標姿勢：
+                <select id="medicalGoal">
+                  <option value="supine">仰臥位</option>
+                  <option value="tilt30">30°側方傾斜位</option>
+                  <option value="lateral90">90°側臥位</option>
+                  <option value="other">その他</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="layoutDivider" class="layout-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="左右領域の幅を変更"></div>
+  <div class="procedure-column">
+    <aside>
+      <div class="card guidance">
+        <div class="guidance-title">ポジショニング手順</div>
+        <div class="guidance-intro">「目標姿勢」で医学的な目標を選択してください。右側の手順は選択した目標に応じて切り替わります。必要に応じてポジショニング中に左側のカメラ映像で姿勢を確認してください。<br>
+          実際に患者さんにポジショニングを行う再には、プランニング担当者が決めたポジショニング（ケアプラン）に基づいて行ってください。<br>
+          よりよい成果を上げるためには、毎回のポジショニングがきちんと実施されることが重要です。</div>
+        <div id="guidanceContent" class="guidance-content">
+          <div class="guidance-loading">手順を読み込んでいます…</div>
+        </div>
+        <div class="caution"><b>注意：</b>この画面の手順・角度・ねじれ表示はPoC用の補助情報です。医学的な正常／異常、褥瘡リスク、安全／危険を自動判定するものではありません。</div>
+      </div>
+      <button id="detailToggle" class="detail-toggle">詳細情報を表示</button>
+      <div id="detailArea" class="detail-area">
+        <div class="card" style="margin-top:6px">
+          <h2 style="font-size:18px">現在の評価</h2>
+          <div id="level" class="level small">待機中</div>
+          <div class="metric"><span>肩ライン角度</span><span id="shoulderAngle" class="value">--</span></div>
+          <div class="metric"><span>骨盤ライン角度</span><span id="pelvisAngle" class="value">--</span></div>
+          <div class="metric"><span>体幹相対角度</span><span id="trunkAngle" class="value">--</span></div>
+          <div class="metric"><span>左右偏位（体幹長比）</span><span id="offset" class="value">--</span></div>
+          <div class="metric"><span>検出信頼度</span><span id="confidence" class="value">--</span></div>
+          <div class="note"><b>重要：</b>小・中・大は動作確認用の仮分類です。医学的な正常／異常、褥瘡リスク、安全／危険を判定するものではありません。</div>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
-</div></div></main></div><div id="layoutDivider" class="layout-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="左右領域の幅を変更"></div><div class="procedure-column"><aside>
-<div class="card guidance">
-<div class="guidance-title">ポジショニング手順</div>
-<div class="guidance-intro">「目標姿勢」で医学的な目標を選択してください。右側の手順は選択した目標に応じて切り替わります。必要に応じてポジショニング中に左側のカメラ映像で姿勢を確認してください。<br>実際に患者さんにポジショニングを行う再には、プランニング担当者が決めたポジショニング（ケアプラン）に基づいて行ってください。<br>よりよい成果を上げるためには、毎回のポジショニングがきちんと実施されることが重要です。</div>
-
-<div id="guidanceContent" class="guidance-content">
-<div class="guidance-loading">手順を読み込んでいます…</div>
 </div>
-
-<div class="caution"><b>注意：</b>この画面の手順・角度・ねじれ表示はPoC用の補助情報です。医学的な正常／異常、褥瘡リスク、安全／危険を自動判定するものではありません。</div>
-</div>
-
-<button id="detailToggle" class="detail-toggle">詳細情報を表示</button>
-
-<div id="detailArea" class="detail-area">
-<div class="card" style="margin-top:12px">
-<h2 style="font-size:18px">現在の評価</h2>
-<div id="level" class="level small">待機中</div>
-<div class="metric"><span>肩ライン角度</span><span id="shoulderAngle" class="value">--</span></div>
-<div class="metric"><span>骨盤ライン角度</span><span id="pelvisAngle" class="value">--</span></div>
-<div class="metric"><span>体幹相対角度</span><span id="trunkAngle" class="value">--</span></div>
-<div class="metric"><span>左右偏位（体幹長比）</span><span id="offset" class="value">--</span></div>
-<div class="metric"><span>検出信頼度</span><span id="confidence" class="value">--</span></div>
-<div class="note"><b>重要：</b>小・中・大は動作確認用の仮分類です。医学的な正常／異常、褥瘡リスク、安全／危険を判定するものではありません。</div>
-</div>
-
-</div>
-</aside></div></div></div>
 <script>
 (function(){"use strict";var video=document.getElementById("video"),canvas=document.getElementById("overlay"),ctx=canvas.getContext("2d"),pose=null,camera=null,running=false,smooth=null;
 var lastMetrics=null,target=null;
@@ -336,4 +628,6 @@ document.getElementById("startBtn").onclick=start;document.getElementById("stopB
   });
 })();
 
-</script></body></html>
+</script>
+</body>
+</html>
